@@ -216,3 +216,93 @@ h3 {
   color: #fff;
   border: 2px solid #52a752;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+    justify-content: flex-start;
+    padding-top: 20px;
+  }
+
+  .box {
+    top: 0;
+    width: 90%;
+    max-width: 350px;
+    padding: 0.6rem;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  .board {
+    width: 90vw;
+    height: 90vw;
+    max-width: 400px;
+    max-height: 400px;
+    gap: 20px;
+  }
+
+  .hole .mole {
+    width: 75%;
+  }
+
+  .cursor {
+    width: 80px;
+    height: 80px;
+  }
+
+  .finalScore {
+    width: 90%;
+    max-width: 300px;
+    padding: 0.8rem;
+  }
+
+  .finalScore h3 {
+    font-size: 1rem;
+  }
+
+  .finalScore h1 {
+    font-size: 1.5rem;
+  }
+
+  .restartBtn {
+    font-size: 16px;
+    padding: 0.6rem 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .box {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+  }
+
+  .board {
+    gap: 15px;
+  }
+
+  .cursor {
+    width: 70px;
+    height: 70px;
+  }
+
+  .finalScore h3 {
+    font-size: 0.9rem;
+  }
+
+  .finalScore h1 {
+    font-size: 1.3rem;
+  }
+
+  .restartBtn {
+    font-size: 14px;
+    padding: 0.5rem 1rem;
+  }
+}
