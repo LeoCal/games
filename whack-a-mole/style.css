@@ -1,0 +1,218 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: none;
+  /* Cartoon garden background: uniform top-down grass view */
+  background-color: #52a752;
+  background-image:
+    /* Individual grass blades - varied thin black lines */
+    linear-gradient(88deg, transparent 49.5%, rgba(0, 0, 0, 0.6) 49.5%, rgba(0, 0, 0, 0.6) 50%, transparent 50%),
+    linear-gradient(92deg, transparent 49.5%, rgba(0, 0, 0, 0.5) 49.5%, rgba(0, 0, 0, 0.5) 50%, transparent 50%),
+    linear-gradient(85deg, transparent 49.5%, rgba(0, 0, 0, 0.4) 49.5%, rgba(0, 0, 0, 0.4) 50%, transparent 50%),
+    linear-gradient(95deg, transparent 49.5%, rgba(0, 0, 0, 0.5) 49.5%, rgba(0, 0, 0, 0.5) 50%, transparent 50%),
+    linear-gradient(90deg, transparent 49.5%, rgba(0, 0, 0, 0.3) 49.5%, rgba(0, 0, 0, 0.3) 50%, transparent 50%),
+    /* Grass texture variation patches */
+    radial-gradient(ellipse at 30% 35%, rgba(70, 140, 70, 0.3) 0 20px, transparent 20px),
+    radial-gradient(ellipse at 70% 45%, rgba(70, 140, 70, 0.3) 0 25px, transparent 25px),
+    radial-gradient(ellipse at 20% 65%, rgba(70, 140, 70, 0.3) 0 22px, transparent 22px),
+    radial-gradient(ellipse at 80% 70%, rgba(70, 140, 70, 0.3) 0 20px, transparent 20px),
+    radial-gradient(ellipse at 50% 85%, rgba(70, 140, 70, 0.3) 0 28px, transparent 28px),
+    /* Lighter grass highlights */
+    radial-gradient(ellipse at 45% 25%, rgba(120, 200, 120, 0.2) 0 15px, transparent 15px),
+    radial-gradient(ellipse at 60% 50%, rgba(120, 200, 120, 0.2) 0 20px, transparent 20px),
+    radial-gradient(ellipse at 35% 80%, rgba(120, 200, 120, 0.2) 0 18px, transparent 18px);
+  background-size:
+    8px 40px, 12px 45px, 10px 35px, 14px 50px, 11px 38px,
+    100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%,
+    100% 100%, 100% 100%, 100% 100%;
+  background-position:
+    0 0, 3px 0, 6px 0, 9px 0, 12px 0,
+    0 0, 0 0, 0 0, 0 0, 0 0,
+    0 0, 0 0, 0 0;
+  background-repeat:
+    repeat, repeat, repeat, repeat, repeat,
+    no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
+    no-repeat, no-repeat, no-repeat;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  /* Repeating flower pattern */
+  background-image:
+    /* Yellow flower pattern */
+    radial-gradient(circle at 50% 50%, #ffd700 0 5px, #000 5px 6px, transparent 6px),
+    radial-gradient(ellipse 5px 10px at 50% 43%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 5px 10px at 50% 57%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 10px 5px at 43% 50%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 10px 5px at 57% 50%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 7px 7px at 45% 45%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 7px 7px at 55% 45%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 7px 7px at 45% 55%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 7px 7px at 55% 55%, #fff 0 100%, #000 100% 101%, transparent 101%);
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  background-position: 0 0;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  /* Pink flower pattern - offset from yellow */
+  background-image:
+    /* Pink flower pattern */
+    radial-gradient(circle at 50% 50%, #ff6b9d 0 5px, #000 5px 6px, transparent 6px),
+    radial-gradient(ellipse 5px 10px at 50% 43%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 5px 10px at 50% 57%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 10px 5px at 43% 50%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 10px 5px at 57% 50%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 7px 7px at 45% 45%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 7px 7px at 55% 45%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 7px 7px at 45% 55%, #fff 0 100%, #000 100% 101%, transparent 101%),
+    radial-gradient(ellipse 7px 7px at 55% 55%, #fff 0 100%, #000 100% 101%, transparent 101%);
+  background-size: 200px 200px;
+  background-repeat: repeat;
+  background-position: 100px 100px; /* Offset to create variety */
+}
+
+.box {
+  position: relative;
+  top: -30px;
+  left: 0px;
+  background-color: #fff;
+  border: 2px solid #52a752;
+  padding: 0.8rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+h3 {
+  font-size: 1.4rem;
+  color: #52a752;
+}
+
+.score,
+.countdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.score span,
+.countdown span {
+  margin: 0px 2px;
+}
+.board {
+  height: 500px;
+  width: 500px;
+  /* border: 1px solid #000; */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 40px;
+}
+.hole {
+  /* background-color: cyan; */
+  background-color: rgb(165, 85, 11);
+  border-radius: 50%;
+  box-shadow: inset 0 10px 0 7px rgb(53, 21, 6),
+    inset 0 20px 20px 15px rgba(0, 0, 0, 0.3), 0 0 5px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+.hole .mole {
+  width: 70%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  animation: raise 0.3s ease-out;
+}
+@keyframes raise {
+  0% {
+    transform: translateX(-50%) translateY(100%);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+.cursor {
+  width: 110px;
+  height: 110px;
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  /* background-color: rgb(165, 85, 11); */
+  background-image: url("./assets/hammer.png");
+  background-size: 100% 100%;
+  transform: translate(-20%, -20%);
+  transition: transform 0.1s;
+  pointer-events: none;
+}
+
+.cursor.active {
+  transform: translate(-20%, -20%) rotate(-45deg);
+}
+.finalScore {
+  display: none;
+  background-color: #fff;
+  border: 2px solid #52a752;
+  padding: 1rem;
+  width: 320px;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10;
+}
+
+.finalScore h3,
+.finalScore h1 {
+  color: #52a752;
+}
+
+.restartBtn {
+  display: none;
+  padding: 0.8rem 1.5rem;
+  background-color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  border: 2px solid #52a752;
+  color: #52a752;
+  margin: 10px 0;
+  transition: all 0.3s;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10;
+}
+.restartBtn:hover {
+  background-color: #52a752;
+  color: #fff;
+  border: 2px solid #52a752;
+}
