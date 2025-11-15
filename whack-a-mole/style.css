@@ -241,6 +241,131 @@ h3 {
   border: 2px solid #52a752;
 }
 
+/* Leaderboard Styles */
+.leaderboard {
+  background-color: #fff;
+  border: 2px solid #52a752;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10;
+  max-width: 500px;
+  width: 90%;
+  margin: 10px 0;
+}
+
+.leaderboard h2 {
+  color: #52a752;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.leaderboard table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #333;
+}
+
+.leaderboard thead {
+  background-color: #52a752;
+  color: #fff;
+}
+
+.leaderboard th,
+.leaderboard td {
+  padding: 0.8rem;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.leaderboard th {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.leaderboard td {
+  font-size: 0.95rem;
+}
+
+.leaderboard tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.leaderboard tbody tr:nth-child(1) td:first-child {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.leaderboard tbody tr:nth-child(2) td:first-child {
+  color: #c0c0c0;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.leaderboard tbody tr:nth-child(3) td:first-child {
+  color: #cd7f32;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Name Input Styles */
+.name-input {
+  background-color: #fff;
+  border: 2px solid #52a752;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 10;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.name-input h2 {
+  color: #52a752;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.name-input input {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 2px solid #52a752;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.name-input input:focus {
+  outline: none;
+  border-color: #3d7f3d;
+}
+
+.submitBtn {
+  padding: 0.8rem 1.5rem;
+  background-color: #52a752;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  border: 2px solid #52a752;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.submitBtn:hover {
+  background-color: #3d7f3d;
+  border-color: #3d7f3d;
+}
+
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
   body {
@@ -329,5 +454,37 @@ h3 {
   .restartBtn {
     font-size: 14px;
     padding: 0.5rem 1rem;
+  }
+
+  .leaderboard {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .leaderboard h2 {
+    font-size: 1.3rem;
+  }
+
+  .leaderboard th,
+  .leaderboard td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.85rem;
+  }
+
+  .name-input {
+    padding: 1rem;
+  }
+
+  .name-input h2 {
+    font-size: 1.2rem;
+  }
+
+  .name-input input {
+    font-size: 0.9rem;
+  }
+
+  .submitBtn {
+    font-size: 14px;
+    padding: 0.6rem 1.2rem;
   }
 }

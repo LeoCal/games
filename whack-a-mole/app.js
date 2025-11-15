@@ -6,6 +6,101 @@ let score = 0;
 const sound = new Audio("./assets/smash.mp3");
 let timeLeft = 30;
 
+// Leaderboard functions
+function getLeaderboard() {
+  const leaderboard = localStorage.getItem('whackAMoleLeaderboard');
+  return leaderboard ? JSON.parse(leaderboard) : [];
+}
+
+function saveToLeaderboard(name, score) {
+  const leaderboard = getLeaderboard();
+  const date = new Date();
+  const europeanDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+  leaderboard.push({ name, score, date: europeanDate });
+  leaderboard.sort((a, b) => b.score - a.score);
+  const top10 = leaderboard.slice(0, 10);
+  localStorage.setItem('whackAMoleLeaderboard', JSON.stringify(top10));
+  return top10;
+}
+
+function isTopTen(score) {
+  const leaderboard = getLeaderboard();
+  if (leaderboard.length < 10) return true;
+  return score > leaderboard[9].score;
+}
+
+function showLeaderboard(leaderboard) {
+  const leaderboardDiv = document.createElement('div');
+  leaderboardDiv.classList.add('leaderboard');
+  
+  const title = document.createElement('h2');
+  title.textContent = 'Leaderboard';
+  leaderboardDiv.appendChild(title);
+  
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Name</th>
+        <th>Score</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${leaderboard.map((entry, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${entry.name}</td>
+          <td>${entry.score}</td>
+          <td>${entry.date}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+  
+  leaderboardDiv.appendChild(table);
+  document.body.appendChild(leaderboardDiv);
+}
+
+function showNameInput() {
+  const nameInputDiv = document.createElement('div');
+  nameInputDiv.classList.add('name-input');
+  
+  const title = document.createElement('h2');
+  title.textContent = '🎉 Top 10! Enter Your Name:';
+  
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Your name';
+  input.maxLength = 20;
+  
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Submit';
+  submitBtn.classList.add('submitBtn');
+  
+  submitBtn.addEventListener('click', () => {
+    const name = input.value.trim() || 'Anonymous';
+    const leaderboard = saveToLeaderboard(name, score);
+    nameInputDiv.remove();
+    document.querySelector('.finalScore').style.display = 'none';
+    showLeaderboard(leaderboard);
+  });
+  
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      submitBtn.click();
+    }
+  });
+  
+  nameInputDiv.appendChild(title);
+  nameInputDiv.appendChild(input);
+  nameInputDiv.appendChild(submitBtn);
+  document.body.appendChild(nameInputDiv);
+  
+  input.focus();
+}
+
 // Function to show touch effect (boom or missed)
 function showTouchEffect(x, y, isHit) {
   const effect = document.createElement('div');
@@ -47,13 +142,23 @@ let interval = setInterval(() => {
     h3.textContent = "Your Final Score is : ";
     h1.textContent = score;
 
+    finalScore.appendChild(h3);
+    finalScore.appendChild(h1);
+
+    // Check if player made it to top 10
+    if (isTopTen(score)) {
+      showNameInput();
+    } else {
+      const leaderboard = getLeaderboard();
+      if (leaderboard.length > 0) {
+        showLeaderboard(leaderboard);
+      }
+    }
+
     // restart the game
     restartBtn.addEventListener("click", () => {
       window.location.reload();
     });
-
-    finalScore.appendChild(h3);
-    finalScore.appendChild(h1);
   }
 }, 1000);
 
