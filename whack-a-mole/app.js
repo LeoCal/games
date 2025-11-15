@@ -6,6 +6,21 @@ let score = 0;
 const sound = new Audio("./assets/smash.mp3");
 let timeLeft = 30;
 
+// Function to show touch effect (boom or missed)
+function showTouchEffect(x, y, isHit) {
+  const effect = document.createElement('div');
+  effect.classList.add('touch-effect');
+  effect.classList.add(isHit ? 'boom' : 'missed');
+  effect.style.left = x + 'px';
+  effect.style.top = y + 'px';
+  document.body.appendChild(effect);
+  
+  // Remove the effect after animation completes
+  setTimeout(() => {
+    document.body.removeChild(effect);
+  }, 600);
+}
+
 let interval = setInterval(() => {
   timeLeft--;
   countdown.textContent = timeLeft;
@@ -51,11 +66,19 @@ function run() {
   img.classList.add("mole");
   img.src = "./assets/mole.png";
 
-  img.addEventListener("click", () => {
+  // Function to handle mole hit
+  const handleMoleHit = (e) => {
+    e.preventDefault();
     score += 10;
     sound.play();
     scoreEl.textContent = score;
     img.src = "./assets/mole-whacked.png";
+    
+    // Show boom effect for all devices
+    const x = e.clientX || (e.touches ? e.touches[0].clientX : e.changedTouches[0].clientX);
+    const y = e.clientY || (e.touches ? e.touches[0].clientY : e.changedTouches[0].clientY);
+    showTouchEffect(x, y, true);
+    
     clearTimeout(timer);
     setTimeout(() => {
       hole.removeChild(img);
@@ -63,7 +86,11 @@ function run() {
         run();
       }
     }, 500);
-  });
+  };
+
+  // Add both click and touch event listeners
+  img.addEventListener("click", handleMoleHit);
+  img.addEventListener("touchstart", handleMoleHit);
 
   hole.appendChild(img);
 
@@ -76,15 +103,3 @@ function run() {
 }
 
 run();
-
-window.addEventListener("mousemove", (e) => {
-  cursor.style.top = e.pageY + "px";
-  cursor.style.left = e.pageX + "px";
-});
-
-window.addEventListener("mousedown", () => {
-  cursor.classList.add("active");
-});
-window.addEventListener("mouseup", () => {
-  cursor.classList.remove("active");
-});

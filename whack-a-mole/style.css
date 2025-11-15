@@ -12,7 +12,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  cursor: none;
+  cursor: default;
   /* Cartoon garden background: uniform top-down grass view */
   background-color: #52a752;
   background-image:
@@ -159,22 +159,46 @@ h3 {
     transform: translateX(-50%) translateY(0);
   }
 }
+
+/* Hide cursor completely - using touch effects for all devices */
 .cursor {
-  width: 110px;
-  height: 110px;
-  position: absolute;
-  top: 100px;
-  left: 100px;
-  /* background-color: rgb(165, 85, 11); */
-  background-image: url("./assets/hammer.png");
-  background-size: 100% 100%;
-  transform: translate(-20%, -20%);
-  transition: transform 0.1s;
-  pointer-events: none;
+  display: none !important;
 }
 
-.cursor.active {
-  transform: translate(-20%, -20%) rotate(-45deg);
+/* Touch feedback effects */
+.touch-effect {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 100;
+  animation: showEffect 0.6s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+
+.touch-effect.boom {
+  background-image: url("./assets/boom.png");
+}
+
+.touch-effect.missed {
+  background-image: url("./assets/missed.png");
+}
+
+@keyframes showEffect {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 .finalScore {
   display: none;
@@ -223,6 +247,7 @@ h3 {
     padding: 10px;
     justify-content: flex-start;
     padding-top: 20px;
+    cursor: default !important;
   }
 
   .box {
@@ -249,7 +274,7 @@ h3 {
     width: 75%;
   }
 
-  .cursor {
+  .touch-effect {
     width: 80px;
     height: 80px;
   }
@@ -288,7 +313,7 @@ h3 {
     gap: 15px;
   }
 
-  .cursor {
+  .touch-effect {
     width: 70px;
     height: 70px;
   }
