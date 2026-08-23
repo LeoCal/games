@@ -5,29 +5,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
+    <!-- Firebase SDK for global leaderboard -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script src="app.js" defer></script>
     <title>Whack a Mole</title>
   </head>
   <body>
-    <div class="box">
-      <h3 class="score">Score : <span>00</span></h3>
-      <h3 class="countdown">
-        Time Left : <span> 30 </span> <span> sec </span>
-      </h3>
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+      <h1 class="game-title">Whack a Mole</h1>
+      <button class="start-btn" id="startBtn">Start</button>
+      <button class="leaderboard-btn" id="leaderboardBtn">Leaderboard</button>
     </div>
-    <div class="board">
-      <div class="hole"></div>
-      <div class="hole"></div>
-      <div class="hole"></div>
-      <div class="hole"></div>
-      <div class="hole"></div>
-      <div class="hole"></div>
-      <div class="hole"></div>
-      <div class="hole"></div>
-      <div class="hole"></div>
+
+    <!-- Leaderboard Screen (hidden initially) -->
+    <div class="leaderboard-screen hidden" id="leaderboardScreen">
+      <h1 class="game-title">Whack a Mole</h1>
+      <div id="leaderboardContainer"></div>
+      <button class="back-btn" id="backBtn">Back</button>
     </div>
-    <div class="cursor"></div>
-    <div class="finalScore"></div>
-    <button class="restartBtn">Restart</button>
+
+    <!-- Game Screen (hidden initially) -->
+    <div class="game-screen" id="gameScreen" style="display: none;">
+      <div class="box">
+        <h3 class="score">Score : <span>00</span></h3>
+        <h3 class="countdown">
+          Time Left : <span> 30 </span> <span> sec </span>
+        </h3>
+        <button class="pauseBtn">Pause</button>
+      </div>
+      <div class="board">
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+        <div class="hole"></div>
+      </div>
+      <div class="cursor"></div>
+      <div class="finalScore"></div>
+      <button class="restartBtn">Restart</button>
+    </div>
   </body>
 </html>
