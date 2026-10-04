@@ -19,19 +19,26 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5034717836472110" crossorigin="anonymous"></script>
   </head>
   <body>
+    <!-- Language Quick Selector at the top -->
+    <div class="lang-selector-container" id="langSelector">
+      <button class="lang-btn" data-lang="EN" title="English">🇬🇧 EN</button>
+      <button class="lang-btn active" data-lang="IT" title="Italiano">🇮🇹 IT</button>
+      <button class="lang-btn" data-lang="FR" title="Français">🇫🇷 FR</button>
+      <button class="lang-btn" data-lang="DE" title="Deutsch">🇩🇪 DE</button>
+    </div>
+
     <!-- Start Screen -->
     <div class="start-screen" id="startScreen">
       <h1 class="game-title">Whack a Mole</h1>
-      <div class="mode-badge">⚡ Modalità Arcade a Livelli Progressivi</div>
-      <button class="start-btn" id="startBtn">Start</button>
-      <button class="leaderboard-btn" id="leaderboardBtn">Leaderboard</button>
+      <button class="start-btn" id="startBtn">Gioca</button>
+      <button class="leaderboard-btn" id="leaderboardBtn">Classifica</button>
     </div>
 
     <!-- Leaderboard Screen (hidden initially) -->
     <div class="leaderboard-screen hidden" id="leaderboardScreen">
       <h1 class="game-title">Whack a Mole</h1>
       <div id="leaderboardContainer"></div>
-      <button class="back-btn" id="backBtn">Back</button>
+      <button class="back-btn" id="backBtn">Indietro</button>
     </div>
 
     <!-- Game Screen (hidden initially) -->
@@ -40,26 +47,26 @@
       <div class="level-up-toast hidden" id="levelUpToast">
         <div class="level-up-banner">
           <span class="level-up-icon">⚡</span>
-          <span class="level-up-title">LEVEL UP!</span>
+          <span class="level-up-title" id="levelUpTitle">LEVEL UP!</span>
         </div>
         <div class="level-up-details">
-          <span class="level-up-sub" id="levelUpSub">Livello 2 • Velocità Aumentata!</span>
-          <span class="level-up-bonus">+4s Bonus Tempo! ⏱️</span>
+          <span class="level-up-sub" id="levelUpSub">Livello 2 • Velocità 1.2x!</span>
+          <span class="level-up-bonus" id="levelUpBonus">+4s Bonus Tempo! ⏱️</span>
         </div>
       </div>
 
       <div class="box">
         <div class="stats-grid">
           <div class="stat-card">
-            <span class="stat-label">Punti</span>
+            <span class="stat-label stat-score-label">Punti</span>
             <span class="stat-value score"><span>0</span></span>
           </div>
           <div class="stat-card stat-level">
-            <span class="stat-label">Livello</span>
+            <span class="stat-label stat-level-label">Livello</span>
             <span class="stat-value level-display">1</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Tempo</span>
+            <span class="stat-label stat-time-label">Tempo</span>
             <span class="stat-value countdown"><span>30</span>s</span>
           </div>
         </div>
@@ -70,7 +77,7 @@
           </div>
           <span class="level-progress-text" id="levelProgressText">0/5 talpe al Livello 2</span>
         </div>
-        <button class="pauseBtn">Pause</button>
+        <button class="pauseBtn">Pausa</button>
       </div>
       <div class="board">
         <div class="hole"></div>

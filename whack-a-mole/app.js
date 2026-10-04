@@ -73,6 +73,212 @@ function playGoldenHitChime() {
   } catch (e) {}
 }
 
+function playBuzzerSound() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(160, now);
+    osc.frequency.linearRampToValueAtTime(95, now + 0.22);
+    gain.gain.setValueAtTime(0.25, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.22);
+  } catch (e) {}
+}
+
+// Multi-Language Support (IT, EN, FR, DE)
+const TRANSLATIONS = {
+  IT: {
+    start: "Gioca",
+    leaderboard: "Classifica",
+    back: "Indietro",
+    scoreLabel: "Punti",
+    levelLabel: "Livello",
+    timeLabel: "Tempo",
+    pause: "Pausa",
+    resume: "Riprendi",
+    progressText: (cur, max, nextLv) => `${cur}/${max} talpe al Livello ${nextLv}`,
+    levelUpTitle: "LEVEL UP!",
+    levelUpSub: (lv, spd) => `Livello ${lv} • Velocità ${spd}x!`,
+    levelUpBonus: (sec) => `+${sec}s Bonus Tempo! ⏱️`,
+    gameOverTitle: "Partita Terminata!",
+    finalScoreLabel: "Punteggio Finale:",
+    highestLevelReached: (lv) => `🏆 Livello Raggiunto: Livello ${lv}`,
+    restart: "Ricomincia",
+    top10Title: "🎉 Top 10 Globale! Inserisci il tuo nome:",
+    namePlaceholder: "Il tuo nome",
+    submitBtn: "Invia",
+    globalLeaderboardTitle: "🌍 Classifica Globale (Top 10)",
+    rankCol: "Pos",
+    nameCol: "Nome",
+    scoreCol: "Punti",
+    levelCol: "Livello",
+    dateCol: "Data",
+    offlineNotice: (n) => `⏳ ${n} punteggio/i in attesa offline — sincronizzazione automatica alla connessione.`,
+    adBadge: "Sponsor / Annuncio",
+    adEndGameTitle: "🎉 Partita Terminata!",
+    adDesc: (pts) => `Visualizza questo breve messaggio pubblicitario per accedere alla classifica e salvare il tuo punteggio di <strong>${pts} punti</strong>.`,
+    adWaitText: (s) => `Attendi ${s}s per visualizzare la classifica...`,
+    adContinueText: "Continua alla Classifica ➡️"
+  },
+  EN: {
+    start: "Start",
+    leaderboard: "Leaderboard",
+    back: "Back",
+    scoreLabel: "Score",
+    levelLabel: "Level",
+    timeLabel: "Time",
+    pause: "Pause",
+    resume: "Resume",
+    progressText: (cur, max, nextLv) => `${cur}/${max} moles to Level ${nextLv}`,
+    levelUpTitle: "LEVEL UP!",
+    levelUpSub: (lv, spd) => `Level ${lv} • Speed ${spd}x!`,
+    levelUpBonus: (sec) => `+${sec}s Time Bonus! ⏱️`,
+    gameOverTitle: "Game Over!",
+    finalScoreLabel: "Final Score:",
+    highestLevelReached: (lv) => `🏆 Highest Level Reached: Level ${lv}`,
+    restart: "Restart",
+    top10Title: "🎉 Global Top 10! Enter your name:",
+    namePlaceholder: "Your name",
+    submitBtn: "Submit",
+    globalLeaderboardTitle: "🌍 Global Leaderboard (Top 10)",
+    rankCol: "Rank",
+    nameCol: "Name",
+    scoreCol: "Score",
+    levelCol: "Level",
+    dateCol: "Date",
+    offlineNotice: (n) => `⏳ ${n} score(s) queued offline — will sync once connected.`,
+    adBadge: "Sponsor / Ad",
+    adEndGameTitle: "🎉 Game Finished!",
+    adDesc: (pts) => `View this short message to access the leaderboard and save your score of <strong>${pts} points</strong>.`,
+    adWaitText: (s) => `Please wait ${s}s to view the leaderboard...`,
+    adContinueText: "Continue to Leaderboard ➡️"
+  },
+  FR: {
+    start: "Jouer",
+    leaderboard: "Classement",
+    back: "Retour",
+    scoreLabel: "Score",
+    levelLabel: "Niveau",
+    timeLabel: "Temps",
+    pause: "Pause",
+    resume: "Reprendre",
+    progressText: (cur, max, nextLv) => `${cur}/${max} taupes au Niveau ${nextLv}`,
+    levelUpTitle: "NIVEAU SUPÉRIEUR!",
+    levelUpSub: (lv, spd) => `Niveau ${lv} • Vitesse ${spd}x!`,
+    levelUpBonus: (sec) => `+${sec}s Bonus de Temps! ⏱️`,
+    gameOverTitle: "Partie Terminée!",
+    finalScoreLabel: "Score Final:",
+    highestLevelReached: (lv) => `🏆 Niveau Atteint: Niveau ${lv}`,
+    restart: "Recommencer",
+    top10Title: "🎉 Top 10 Mondial! Entrez votre nom:",
+    namePlaceholder: "Votre nom",
+    submitBtn: "Envoyer",
+    globalLeaderboardTitle: "🌍 Classement Mondial (Top 10)",
+    rankCol: "Rang",
+    nameCol: "Nom",
+    scoreCol: "Score",
+    levelCol: "Niveau",
+    dateCol: "Date",
+    offlineNotice: (n) => `⏳ ${n} score(s) en attente hors ligne — synchronisation à la connexion.`,
+    adBadge: "Sponsor / Annonce",
+    adEndGameTitle: "🎉 Partie Terminée!",
+    adDesc: (pts) => `Regardez ce court message pour accéder au classement et enregistrer vos <strong>${pts} points</strong>.`,
+    adWaitText: (s) => `Attendez ${s}s pour voir le classement...`,
+    adContinueText: "Continuer vers le Classement ➡️"
+  },
+  DE: {
+    start: "Starten",
+    leaderboard: "Bestenliste",
+    back: "Zurück",
+    scoreLabel: "Punkte",
+    levelLabel: "Level",
+    timeLabel: "Zeit",
+    pause: "Pause",
+    resume: "Fortsetzen",
+    progressText: (cur, max, nextLv) => `${cur}/${max} Maulwürfe bis Level ${nextLv}`,
+    levelUpTitle: "LEVEL UP!",
+    levelUpSub: (lv, spd) => `Level ${lv} • Tempo ${spd}x!`,
+    levelUpBonus: (sec) => `+${sec}s Zeitbonus! ⏱️`,
+    gameOverTitle: "Spiel Vorbei!",
+    finalScoreLabel: "Endstand:",
+    highestLevelReached: (lv) => `🏆 Erreichtes Level: Level ${lv}`,
+    restart: "Neustart",
+    top10Title: "🎉 Globale Top 10! Gib deinen Namen ein:",
+    namePlaceholder: "Dein Name",
+    submitBtn: "Senden",
+    globalLeaderboardTitle: "🌍 Globale Bestenliste (Top 10)",
+    rankCol: "Rang",
+    nameCol: "Name",
+    scoreCol: "Punkte",
+    levelCol: "Level",
+    dateCol: "Datum",
+    offlineNotice: (n) => `⏳ ${n} Punktestand(e) offline in der Warteschlange — Synchronisierung bei Verbindung.`,
+    adBadge: "Sponsor / Anzeige",
+    adEndGameTitle: "🎉 Spiel Beendet!",
+    adDesc: (pts) => `Sieh dir diese kurze Anzeige an, um zur Bestenliste zu gelangen und deine <strong>${pts} Punkte</strong> zu speichern.`,
+    adWaitText: (s) => `Warte ${s}s, um die Bestenliste zu sehen...`,
+    adContinueText: "Weiter zur Bestenliste ➡️"
+  }
+};
+
+let currentLang = localStorage.getItem('whackAMoleLang') || 'IT';
+function t() {
+  return TRANSLATIONS[currentLang] || TRANSLATIONS['IT'];
+}
+
+function setLanguage(lang) {
+  if (!TRANSLATIONS[lang]) return;
+  currentLang = lang;
+  localStorage.setItem('whackAMoleLang', lang);
+  applyTranslations();
+}
+
+function applyTranslations() {
+  const tr = t();
+  document.documentElement.lang = currentLang.toLowerCase();
+
+  // Active button highlight
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === currentLang);
+  });
+
+  // Buttons
+  if (typeof startBtn !== 'undefined' && startBtn) startBtn.textContent = tr.start;
+  if (typeof leaderboardBtn !== 'undefined' && leaderboardBtn) leaderboardBtn.textContent = tr.leaderboard;
+  if (typeof backBtn !== 'undefined' && backBtn) backBtn.textContent = tr.back;
+  if (typeof pauseBtn !== 'undefined' && pauseBtn) pauseBtn.textContent = isPaused ? tr.resume : tr.pause;
+
+  const restartBtn = document.querySelector('.restartBtn');
+  if (restartBtn) restartBtn.textContent = tr.restart;
+
+  // HUD Labels
+  const scoreLbl = document.querySelector('.stat-score-label');
+  if (scoreLbl) scoreLbl.textContent = tr.scoreLabel;
+  const levelLbl = document.querySelector('.stat-level-label');
+  if (levelLbl) levelLbl.textContent = tr.levelLabel;
+  const timeLbl = document.querySelector('.stat-time-label');
+  if (timeLbl) timeLbl.textContent = tr.timeLabel;
+
+  // Level Up Toast Title
+  const levelUpTitle = document.getElementById('levelUpTitle');
+  if (levelUpTitle) levelUpTitle.textContent = tr.levelUpTitle;
+
+  // Progress text
+  updateLevelUI();
+
+  // If leaderboard screen is currently visible, refresh it
+  if (typeof leaderboardScreen !== 'undefined' && leaderboardScreen && !leaderboardScreen.classList.contains('hidden')) {
+    getLeaderboard().then(showLeaderboard);
+  }
+}
+
 // Google AdSense config
 const ADSENSE_CONFIG = {
   client: "ca-pub-5034717836472110", // ID Editore AdSense configurato
@@ -276,11 +482,12 @@ async function showLeaderboard(leaderboard) {
   const existingLeaderboard = document.querySelector('.leaderboard');
   if (existingLeaderboard) existingLeaderboard.remove();
 
+  const tr = t();
   const leaderboardDiv = document.createElement('div');
   leaderboardDiv.classList.add('leaderboard');
 
   const title = document.createElement('h2');
-  title.textContent = '🌍 Global Leaderboard (Top 10)';
+  title.textContent = tr.globalLeaderboardTitle;
   leaderboardDiv.appendChild(title);
 
   const pendingScores = getPendingScores();
@@ -290,7 +497,7 @@ async function showLeaderboard(leaderboard) {
     notice.style.color = '#ffd700';
     notice.style.margin = '4px 0 10px 0';
     notice.style.fontWeight = 'bold';
-    notice.textContent = `⏳ ${pendingScores.length} score(s) queued offline — will sync to Firebase once connected.`;
+    notice.textContent = tr.offlineNotice(pendingScores.length);
     leaderboardDiv.appendChild(notice);
   }
 
@@ -298,11 +505,11 @@ async function showLeaderboard(leaderboard) {
   table.innerHTML = `
     <thead>
       <tr>
-        <th>Rank</th>
-        <th>Name</th>
-        <th>Score</th>
-        <th>Level</th>
-        <th>Date</th>
+        <th>${tr.rankCol}</th>
+        <th>${tr.nameCol}</th>
+        <th>${tr.scoreCol}</th>
+        <th>${tr.levelCol}</th>
+        <th>${tr.dateCol}</th>
       </tr>
     </thead>
     <tbody>
@@ -321,7 +528,7 @@ async function showLeaderboard(leaderboard) {
   leaderboardDiv.appendChild(table);
 
   // Append to leaderboardContainer if on leaderboard screen, otherwise to body
-  if (leaderboardScreen && leaderboardScreen.style.display !== 'none') {
+  if (leaderboardScreen && leaderboardScreen.style.display !== 'none' && !leaderboardScreen.classList.contains('hidden')) {
     leaderboardContainer.appendChild(leaderboardDiv);
   } else {
     document.body.appendChild(leaderboardDiv);
@@ -337,15 +544,16 @@ function showEndGameAd(finalScoreValue, onAdComplete) {
   const existingAd = document.querySelector('.ad-interstitial-container');
   if (existingAd) existingAd.remove();
 
+  const tr = t();
   const adContainer = document.createElement('div');
   adContainer.classList.add('ad-interstitial-container');
 
   adContainer.innerHTML = `
     <div class="ad-notice-header">
-      <span class="ad-notice-badge">Sponsor / Annuncio</span>
-      <h2 class="ad-notice-title">🎉 Partita Terminata!</h2>
+      <span class="ad-notice-badge">${tr.adBadge}</span>
+      <h2 class="ad-notice-title">${tr.adEndGameTitle}</h2>
       <p class="ad-notice-desc">
-        Visualizza questo breve messaggio pubblicitario per accedere alla classifica e salvare il tuo punteggio di <strong>${finalScoreValue} punti</strong>.
+        ${tr.adDesc(finalScoreValue)}
       </p>
     </div>
     <div class="ad-box-wrapper">
@@ -363,7 +571,7 @@ function showEndGameAd(finalScoreValue, onAdComplete) {
       </div>
     </div>
     <button class="ad-continue-btn" disabled id="adContinueBtn">
-      Attendi ${ADSENSE_CONFIG.interstitialWaitSeconds}s per visualizzare la classifica...
+      ${tr.adWaitText(ADSENSE_CONFIG.interstitialWaitSeconds)}
     </button>
   `;
 
@@ -397,30 +605,31 @@ function showEndGameAd(finalScoreValue, onAdComplete) {
   countdownTimer = setInterval(() => {
     remainingSeconds--;
     if (remainingSeconds > 0) {
-      continueBtn.textContent = `Attendi ${remainingSeconds}s per visualizzare la classifica...`;
+      continueBtn.textContent = tr.adWaitText(remainingSeconds);
     } else {
       clearInterval(countdownTimer);
       countdownTimer = null;
       continueBtn.disabled = false;
-      continueBtn.textContent = 'Continua alla Classifica ➡️';
+      continueBtn.textContent = tr.adContinueText;
     }
   }, 1000);
 }
 
 async function showNameInput() {
+  const tr = t();
   const nameInputDiv = document.createElement('div');
   nameInputDiv.classList.add('name-input');
 
   const title = document.createElement('h2');
-  title.textContent = '🎉 Top 10 Globale! Inserisci il tuo nome:';
+  title.textContent = tr.top10Title;
 
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = 'Il tuo nome';
+  input.placeholder = tr.namePlaceholder;
   input.maxLength = 20;
 
   const submitBtn = document.createElement('button');
-  submitBtn.textContent = 'Invia';
+  submitBtn.textContent = tr.submitBtn;
   submitBtn.classList.add('submitBtn');
 
   submitBtn.addEventListener('click', async () => {
@@ -472,7 +681,15 @@ function getLevelConfig(level) {
   // Punti per talpa normale (aumentano con il livello)
   const basePoints = 10 + (level - 1) * 5;
   // Probabilità di spawn talpa dorata (bonus 3x punti!)
-  const goldenChance = Math.min(0.25, 0.08 + level * 0.03);
+  const goldenChance = Math.min(0.24, 0.08 + level * 0.03);
+  // Probabilità di spawn talpa rossa (malus / pericolo!) - appare dal Livello 2 in poi
+  let redChance = 0;
+  if (level === 2) redChance = 0.16;
+  else if (level === 3) redChance = 0.22;
+  else if (level === 4) redChance = 0.26;
+  else if (level >= 5) redChance = 0.30;
+  const redPenalty = 10 + level * 5; // -20 al lv 2, -25 al lv 3, -30 al lv 4...
+
   // Probabilità di talpa multipla contemporanea
   let multiChance = 0;
   if (level === 2) multiChance = 0.15;
@@ -480,10 +697,11 @@ function getLevelConfig(level) {
   else if (level === 4) multiChance = 0.45;
   else if (level >= 5) multiChance = 0.60;
 
-  return { duration, hitDelay, basePoints, goldenChance, multiChance };
+  return { duration, hitDelay, basePoints, goldenChance, redChance, redPenalty, multiChance };
 }
 
 function updateLevelUI() {
+  const tr = t();
   const levelDisplay = document.querySelector('.level-display');
   if (levelDisplay) levelDisplay.textContent = currentLevel;
 
@@ -493,18 +711,23 @@ function updateLevelUI() {
 
   if (progressFill) progressFill.style.width = `${percent}%`;
   if (progressText) {
-    progressText.textContent = `${whacksInCurrentLevel}/${WHACKS_PER_LEVEL} talpe al Livello ${currentLevel + 1}`;
+    progressText.textContent = tr.progressText(whacksInCurrentLevel, WHACKS_PER_LEVEL, currentLevel + 1);
   }
 }
 
 function showLevelUpToast(level, bonusSecs) {
+  const tr = t();
   const toast = document.getElementById('levelUpToast');
   const sub = document.getElementById('levelUpSub');
+  const bonus = document.getElementById('levelUpBonus');
   if (!toast) return;
 
   if (sub) {
     const speedMultiplier = (1 + (level - 1) * 0.2).toFixed(1);
-    sub.textContent = `Livello ${level} • Velocità ${speedMultiplier}x!`;
+    sub.textContent = tr.levelUpSub(level, speedMultiplier);
+  }
+  if (bonus) {
+    bonus.textContent = tr.levelUpBonus(bonusSecs);
   }
 
   toast.classList.remove('hidden');
@@ -539,10 +762,11 @@ function checkLevelUp() {
   }
 }
 
-function showFloatingScore(x, y, text, isGolden) {
+function showFloatingScore(x, y, text, isGolden, isPenalty) {
   const floater = document.createElement('div');
   floater.classList.add('floating-score');
   if (isGolden) floater.classList.add('golden');
+  if (isPenalty) floater.classList.add('penalty');
   floater.textContent = text;
   floater.style.left = `${x}px`;
   floater.style.top = `${y}px`;
@@ -573,12 +797,22 @@ function spawnMole() {
 
   const config = getLevelConfig(currentLevel);
   const hole = availableHoles[Math.floor(Math.random() * availableHoles.length)];
-  const isGolden = Math.random() < config.goldenChance;
+
+  // Tipologia talpa: Rossa (malus), Gialla (bonus), oppure Normale
+  let moleType = 'normal';
+  const rand = Math.random();
+  if (rand < config.redChance) {
+    moleType = 'red';
+  } else if (rand < config.redChance + config.goldenChance) {
+    moleType = 'golden';
+  }
 
   const img = document.createElement('img');
   img.classList.add('mole');
-  if (isGolden) {
+  if (moleType === 'golden') {
     img.classList.add('golden-mole');
+  } else if (moleType === 'red') {
+    img.classList.add('red-mole');
   }
   img.src = './assets/mole.png';
 
@@ -589,28 +823,39 @@ function spawnMole() {
     if (whacked || isPaused || timeLeft <= 0) return;
     whacked = true;
 
-    const earnedPoints = isGolden ? config.basePoints * 3 : config.basePoints;
-    score += earnedPoints;
-    scoreEl.textContent = score;
-
-    whacksInCurrentLevel++;
-
-    if (isGolden) {
-      playGoldenHitChime();
-    } else {
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
-    }
-
-    img.src = './assets/mole-whacked.png';
-
     const x = e.clientX || (e.touches ? e.touches[0].clientX : (e.changedTouches ? e.changedTouches[0].clientX : window.innerWidth / 2));
     const y = e.clientY || (e.touches ? e.touches[0].clientY : (e.changedTouches ? e.changedTouches[0].clientY : window.innerHeight / 2));
 
-    showTouchEffect(x, y, true);
-    showFloatingScore(x, y, `+${earnedPoints}${isGolden ? ' ⭐' : ''}`, isGolden);
+    if (moleType === 'red') {
+      // PENALITÀ TALPA ROSSA: toglie punti!
+      score = Math.max(0, score - config.redPenalty);
+      scoreEl.textContent = score;
 
-    checkLevelUp();
+      playBuzzerSound();
+      img.src = './assets/mole-whacked.png';
+      showTouchEffect(x, y, false);
+      showFloatingScore(x, y, `-${config.redPenalty} ⚠️`, false, true);
+    } else {
+      // TALPA NORMALE O GIALLA (BONUS)
+      const earnedPoints = moleType === 'golden' ? config.basePoints * 3 : config.basePoints;
+      score += earnedPoints;
+      scoreEl.textContent = score;
+
+      whacksInCurrentLevel++;
+
+      if (moleType === 'golden') {
+        playGoldenHitChime();
+      } else {
+        sound.currentTime = 0;
+        sound.play().catch(() => {});
+      }
+
+      img.src = './assets/mole-whacked.png';
+      showTouchEffect(x, y, true);
+      showFloatingScore(x, y, `+${earnedPoints}${moleType === 'golden' ? ' ⭐' : ''}`, moleType === 'golden', false);
+
+      checkLevelUp();
+    }
 
     const data = activeMoles.get(hole);
     if (data && data.timeout) {
@@ -636,7 +881,7 @@ function spawnMole() {
 
   const moleData = {
     img,
-    isGolden,
+    moleType,
     whacked: false,
     timeout: setTimeout(() => {
       if (!whacked && hole.contains(img)) {
@@ -670,7 +915,8 @@ function runWave() {
 // Pause/Resume functionality
 pauseBtn.addEventListener("click", () => {
   isPaused = !isPaused;
-  pauseBtn.textContent = isPaused ? "Resume" : "Pause";
+  const tr = t();
+  pauseBtn.textContent = isPaused ? tr.resume : tr.pause;
 
   if (isPaused) {
     activeMoles.forEach((data) => {
@@ -699,9 +945,6 @@ pauseBtn.addEventListener("click", () => {
   }
 });
 
-// Initialize Firebase on load
-document.addEventListener('DOMContentLoaded', initFirebase);
-
 // Start screen elements
 const startScreen = document.getElementById('startScreen');
 const gameScreen = document.getElementById('gameScreen');
@@ -717,7 +960,6 @@ leaderboardBtn.addEventListener('click', showStartLeaderboard);
 backBtn.addEventListener('click', showStartScreen);
 
 async function showStartLeaderboard() {
-  // Hide start screen, show leaderboard screen
   startScreen.classList.add('hidden');
   leaderboardScreen.classList.remove('hidden');
 
@@ -726,14 +968,10 @@ async function showStartLeaderboard() {
 }
 
 function showStartScreen() {
-  // Hide leaderboard screen, show start screen
   leaderboardScreen.classList.add('hidden');
   startScreen.classList.remove('hidden');
 
-  // Clear leaderboard container
   leaderboardContainer.innerHTML = '';
-
-  // Blur the back button to prevent focus/hover state from persisting
   backBtn.blur();
 }
 
@@ -747,10 +985,12 @@ function startGame() {
   whacksInCurrentLevel = 0;
   clearAllMoles();
 
+  const tr = t();
+
   // Update UI
   scoreEl.textContent = '0';
   countdown.textContent = '30';
-  pauseBtn.textContent = 'Pause';
+  pauseBtn.textContent = tr.pause;
   updateLevelUI();
 
   // Hide level toast if shown
@@ -793,12 +1033,14 @@ function startGame() {
         document.querySelector("body").style.cursor = "default";
         cursor.style.display = "none";
 
+        const currentTr = t();
         finalScore.innerHTML = `
-          <h3>Partita Terminata!</h3>
-          <h1>${score} Punti</h1>
-          <div class="final-level-badge">🏆 Livello Raggiunto: Livello ${highestLevel}</div>
+          <h3>${currentTr.gameOverTitle}</h3>
+          <h1>${score} ${currentTr.scoreLabel}</h1>
+          <div class="final-level-badge">${currentTr.highestLevelReached(highestLevel)}</div>
         `;
         finalScore.style.display = "block";
+        restartBtn.textContent = currentTr.restart;
 
         // Mostra l'annuncio e il messaggio di transizione a fine partita
         showEndGameAd(score, () => {
@@ -828,3 +1070,23 @@ function startGame() {
   // Start the game loop
   runWave();
 }
+
+function initLanguageSelector() {
+  const langButtons = document.querySelectorAll('.lang-btn');
+  langButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setLanguage(btn.dataset.lang);
+    });
+  });
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+  initFirebase();
+  initLanguageSelector();
+  applyTranslations();
+});
+
+// Run translation immediately as well
+initLanguageSelector();
+applyTranslations();
