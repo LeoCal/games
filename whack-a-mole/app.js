@@ -95,6 +95,7 @@ function playBuzzerSound() {
 // Multi-Language Support (IT, EN, FR, DE)
 const TRANSLATIONS = {
   IT: {
+    gameTitle: "Acchiappa la Talpa",
     start: "Gioca",
     leaderboard: "Classifica",
     back: "Indietro",
@@ -128,6 +129,7 @@ const TRANSLATIONS = {
     adContinueText: "Continua alla Classifica ➡️"
   },
   EN: {
+    gameTitle: "Whack a Mole",
     start: "Start",
     leaderboard: "Leaderboard",
     back: "Back",
@@ -161,6 +163,7 @@ const TRANSLATIONS = {
     adContinueText: "Continue to Leaderboard ➡️"
   },
   FR: {
+    gameTitle: "Tape-Taupe",
     start: "Jouer",
     leaderboard: "Classement",
     back: "Retour",
@@ -194,6 +197,7 @@ const TRANSLATIONS = {
     adContinueText: "Continuer vers le Classement ➡️"
   },
   DE: {
+    gameTitle: "Hau den Maulwurf",
     start: "Starten",
     leaderboard: "Bestenliste",
     back: "Zurück",
@@ -252,6 +256,12 @@ function applyTranslations() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === currentLang);
   });
+
+  // Game Title (Start screen, Leaderboard screen, Document tab)
+  document.querySelectorAll('.game-title').forEach(titleEl => {
+    titleEl.textContent = tr.gameTitle;
+  });
+  document.title = `${tr.gameTitle} | LeoCal Games`;
 
   // Buttons
   if (typeof startBtn !== 'undefined' && startBtn) startBtn.textContent = tr.start;
