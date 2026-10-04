@@ -664,4 +664,157 @@ h3 {
     font-size: 14px;
     padding: 0.6rem 1.2rem;
   }
+
+  .ad-interstitial-container {
+    padding: 0.8rem;
+    max-width: 95%;
+  }
+
+  .ad-notice-title {
+    font-size: 1.1rem;
+  }
+
+  .ad-notice-desc {
+    font-size: 0.8rem;
+  }
+
+  .ad-box-wrapper {
+    min-height: 180px;
+    max-height: 240px;
+  }
 }
+
+/* AdSense End-Game Interstitial & Transition Styles */
+.ad-interstitial-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  border: 3px solid #52a752;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  padding: 1.2rem;
+  max-width: 440px;
+  width: 92%;
+  margin: 10px auto;
+  text-align: center;
+  position: relative;
+  z-index: 50;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.ad-notice-header {
+  margin-bottom: 0.6rem;
+}
+
+.ad-notice-badge {
+  display: inline-block;
+  background-color: #52a752;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.ad-notice-title {
+  color: #2e692e;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.ad-notice-desc {
+  color: #555;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  margin: 0 auto;
+}
+
+.ad-box-wrapper {
+  width: 100%;
+  min-height: 200px;
+  max-height: 280px;
+  background-color: #f7faf7;
+  border: 2px dashed #a8d5a8;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin: 10px 0;
+  padding: 8px;
+  position: relative;
+}
+
+.ad-box-wrapper .adsbygoogle {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+}
+
+.ad-placeholder-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  gap: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.ad-placeholder-badge {
+  background: #e6eee6;
+  color: #2e692e;
+  border: 1px solid #c2dec2;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.ad-placeholder-id {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #52a752;
+  background: rgba(82, 167, 82, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.ad-continue-btn {
+  width: 100%;
+  max-width: 290px;
+  padding: 0.75rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #52a752;
+  border: 2px solid #52a752;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ad-continue-btn:hover:not(:disabled) {
+  background-color: #3d7f3d;
+  border-color: #3d7f3d;
+  transform: scale(1.02);
+}
+
+.ad-continue-btn:disabled {
+  background-color: #a4cca4;
+  border-color: #a4cca4;
+  cursor: wait;
+  opacity: 0.85;
+}
+

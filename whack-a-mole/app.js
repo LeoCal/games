@@ -9,6 +9,13 @@ let timeLeft = 30;
 let isPaused = false;
 let moleTimeout = null;
 
+// Google AdSense config - Inserisci qui il tuo ID Editore e ID Slot
+const ADSENSE_CONFIG = {
+  client: "ca-pub-XXXXXXXXXXXXXXXX", // Sostituisci con il tuo Publisher ID Google AdSense
+  slot: "1234567890",               // Sostituisci con il tuo Ad Slot ID
+  interstitialWaitSeconds: 5         // Secondi di attesa prima di poter procedere
+};
+
 // Firebase config - REPLACE WITH YOUR OWN CONFIG FROM FIREBASE CONSOLE
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCXisNORHqPej7rAaNM1DfBMzfxDnC-lt8",
@@ -255,6 +262,85 @@ async function showLeaderboard(leaderboard) {
   }
 }
 
+/**
+ * Mostra l'annuncio e il messaggio informativo di fine partita prima di passare
+ * all'inserimento del nome o alla visualizzazione della classifica.
+ */
+function showEndGameAd(finalScoreValue, onAdComplete) {
+  // Rimuovi eventuali annunci precedenti
+  const existingAd = document.querySelector('.ad-interstitial-container');
+  if (existingAd) existingAd.remove();
+
+  const adContainer = document.createElement('div');
+  adContainer.classList.add('ad-interstitial-container');
+
+  adContainer.innerHTML = `
+    <div class="ad-notice-header">
+      <span class="ad-notice-badge">Sponsor / Annuncio</span>
+      <h2 class="ad-notice-title">🎉 Partita Terminata!</h2>
+      <p class="ad-notice-desc">
+        Visualizza questo breve messaggio pubblicitario per accedere alla classifica e salvare il tuo punteggio di <strong>${finalScoreValue} punti</strong>.
+      </p>
+    </div>
+    <div class="ad-box-wrapper">
+      <!-- Google AdSense Interstitial / End-Game Unit -->
+      <ins class="adsbygoogle"
+           style="display:block; width:100%; min-height:180px;"
+           data-ad-client="${ADSENSE_CONFIG.client}"
+           data-ad-slot="${ADSENSE_CONFIG.slot}"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <div class="ad-placeholder-preview">
+        <span class="ad-placeholder-badge">Google AdSense</span>
+        <span>Spazio Pubblicitario Interstitial</span>
+        <span class="ad-placeholder-id">${ADSENSE_CONFIG.client}</span>
+      </div>
+    </div>
+    <button class="ad-continue-btn" disabled id="adContinueBtn">
+      Attendi ${ADSENSE_CONFIG.interstitialWaitSeconds}s per visualizzare la classifica...
+    </button>
+  `;
+
+  document.body.appendChild(adContainer);
+
+  // Invia richiesta ad AdSense
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  } catch (err) {
+    console.log('AdSense init error:', err);
+  }
+
+  const continueBtn = adContainer.querySelector('#adContinueBtn');
+  let remainingSeconds = ADSENSE_CONFIG.interstitialWaitSeconds;
+  let countdownTimer = null;
+
+  const proceed = () => {
+    if (countdownTimer) clearInterval(countdownTimer);
+    adContainer.remove();
+    if (typeof onAdComplete === 'function') {
+      onAdComplete();
+    }
+  };
+
+  continueBtn.addEventListener('click', () => {
+    if (!continueBtn.disabled) {
+      proceed();
+    }
+  });
+
+  countdownTimer = setInterval(() => {
+    remainingSeconds--;
+    if (remainingSeconds > 0) {
+      continueBtn.textContent = `Attendi ${remainingSeconds}s per visualizzare la classifica...`;
+    } else {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      continueBtn.disabled = false;
+      continueBtn.textContent = 'Continua alla Classifica ➡️';
+    }
+  }, 1000);
+}
+
 async function showNameInput() {
   const nameInputDiv = document.createElement('div');
   nameInputDiv.classList.add('name-input');
@@ -278,6 +364,7 @@ async function showNameInput() {
     document.querySelector('.finalScore').style.display = 'none';
     const leaderboard = await getLeaderboard();
     showLeaderboard(leaderboard);
+    document.querySelector('.restartBtn').style.display = 'block';
   });
 
   input.addEventListener('keypress', (e) => {
@@ -428,7 +515,7 @@ function startGame() {
   startScreen.classList.add('hidden');
   gameScreen.style.display = 'flex';
 
-  // Clear any existing final score/leaderboard/name input
+  // Clear any existing final score/leaderboard/name input/ad container
   document.querySelector('.finalScore').innerHTML = '';
   document.querySelector('.finalScore').style.display = 'none';
   document.querySelector('.restartBtn').style.display = 'none';
@@ -436,6 +523,8 @@ function startGame() {
   if (existingLeaderboard) existingLeaderboard.remove();
   const existingNameInput = document.querySelector('.name-input');
   if (existingNameInput) existingNameInput.remove();
+  const existingAd = document.querySelector('.ad-interstitial-container');
+  if (existingAd) existingAd.remove();
 
   // Restart timer interval
   clearInterval(interval);
@@ -457,10 +546,9 @@ function startGame() {
         const finalScore = document.querySelector(".finalScore");
         const restartBtn = document.querySelector(".restartBtn");
         document.querySelector("body").style.cursor = "default";
-        finalScore.style.display = "block";
-        restartBtn.style.display = "block";
         cursor.style.display = "none";
 
+        finalScore.innerHTML = '';
         const h3 = document.createElement("h3");
         const h1 = document.createElement("h1");
         h3.textContent = "Your Final Score is : ";
@@ -468,18 +556,23 @@ function startGame() {
 
         finalScore.appendChild(h3);
         finalScore.appendChild(h1);
+        finalScore.style.display = "block";
 
-        // Check if player made it to top 10
-        isTopTen(score).then(isTop => {
-          if (isTop) {
-            showNameInput();
-          } else {
-            getLeaderboard().then(leaderboard => {
-              if (leaderboard.length > 0) {
-                showLeaderboard(leaderboard);
-              }
-            });
-          }
+        // Mostra l'annuncio e il messaggio di transizione a fine partita
+        showEndGameAd(score, () => {
+          // Check if player made it to top 10
+          isTopTen(score).then(isTop => {
+            if (isTop) {
+              showNameInput();
+            } else {
+              getLeaderboard().then(leaderboard => {
+                if (leaderboard.length > 0) {
+                  showLeaderboard(leaderboard);
+                }
+                restartBtn.style.display = "block";
+              });
+            }
+          });
         });
 
         // restart the game
