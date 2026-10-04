@@ -95,7 +95,7 @@ function playBuzzerSound() {
 // Multi-Language Support (IT, EN, FR, DE)
 const TRANSLATIONS = {
   IT: {
-    gameTitle: "Acchiappa la Talpa",
+    gameTitle: "Schiaccia la Talpa",
     start: "Gioca",
     leaderboard: "Classifica",
     back: "Indietro",
