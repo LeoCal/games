@@ -7,7 +7,71 @@ let score = 0;
 const sound = new Audio("./assets/smash.mp3");
 let timeLeft = 30;
 let isPaused = false;
-let moleTimeout = null;
+
+// Progressive Levels & Game State
+let currentLevel = 1;
+let highestLevel = 1;
+let whacksInCurrentLevel = 0;
+const WHACKS_PER_LEVEL = 5;
+const activeMoles = new Map(); // hole -> { timeout, isGolden, img }
+let levelUpTimer = null;
+
+// Web Audio API synthesizer for arcade sound effects
+let audioCtx = null;
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      audioCtx = new AudioContextClass();
+    }
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
+  }
+  return audioCtx;
+}
+
+function playLevelUpChime() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+      gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.25);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 0.25);
+    });
+  } catch (e) {}
+}
+
+function playGoldenHitChime() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const notes = [987.77, 1318.51]; // B5, E6
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+      gain.gain.setValueAtTime(0.18, now + idx * 0.07);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.07);
+      osc.stop(now + idx * 0.07 + 0.2);
+    });
+  } catch (e) {}
+}
 
 // Google AdSense config
 const ADSENSE_CONFIG = {
@@ -149,10 +213,10 @@ async function getLeaderboard() {
   return combined.slice(0, 10);
 }
 
-async function saveToLeaderboard(name, score) {
+async function saveToLeaderboard(name, score, level) {
   const date = new Date();
   const europeanDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
-  const entry = { name, score, date: europeanDate };
+  const entry = { name, score, level: level || 1, date: europeanDate };
 
   let savedToFirebase = false;
 
@@ -237,6 +301,7 @@ async function showLeaderboard(leaderboard) {
         <th>Rank</th>
         <th>Name</th>
         <th>Score</th>
+        <th>Level</th>
         <th>Date</th>
       </tr>
     </thead>
@@ -246,6 +311,7 @@ async function showLeaderboard(leaderboard) {
           <td>${index + 1}</td>
           <td>${entry.name}</td>
           <td>${entry.score}</td>
+          <td><span class="level-pill">Lv ${entry.level || 1}</span></td>
           <td>${entry.date}</td>
         </tr>
       `).join('')}
@@ -359,7 +425,7 @@ async function showNameInput() {
 
   submitBtn.addEventListener('click', async () => {
     const name = input.value.trim() || 'Anonymous';
-    await saveToLeaderboard(name, score);
+    await saveToLeaderboard(name, score, highestLevel);
     nameInputDiv.remove();
     document.querySelector('.finalScore').style.display = 'none';
     const leaderboard = await getLeaderboard();
@@ -398,68 +464,240 @@ function showTouchEffect(x, y, isHit) {
 
 let interval = null;
 
+function getLevelConfig(level) {
+  // Tempo di permanenza della talpa: parte da 1350ms al Livello 1 e si riduce progressivamente fino a un limite di 450ms
+  const duration = Math.max(450, Math.round(1350 - (level - 1) * 160));
+  // Tempo in cui resta schiacciata prima di sparire
+  const hitDelay = Math.max(180, Math.round(380 - (level - 1) * 35));
+  // Punti per talpa normale (aumentano con il livello)
+  const basePoints = 10 + (level - 1) * 5;
+  // Probabilità di spawn talpa dorata (bonus 3x punti!)
+  const goldenChance = Math.min(0.25, 0.08 + level * 0.03);
+  // Probabilità di talpa multipla contemporanea
+  let multiChance = 0;
+  if (level === 2) multiChance = 0.15;
+  else if (level === 3) multiChance = 0.30;
+  else if (level === 4) multiChance = 0.45;
+  else if (level >= 5) multiChance = 0.60;
+
+  return { duration, hitDelay, basePoints, goldenChance, multiChance };
+}
+
+function updateLevelUI() {
+  const levelDisplay = document.querySelector('.level-display');
+  if (levelDisplay) levelDisplay.textContent = currentLevel;
+
+  const progressFill = document.getElementById('levelProgressFill');
+  const progressText = document.getElementById('levelProgressText');
+  const percent = Math.min(100, Math.round((whacksInCurrentLevel / WHACKS_PER_LEVEL) * 100));
+
+  if (progressFill) progressFill.style.width = `${percent}%`;
+  if (progressText) {
+    progressText.textContent = `${whacksInCurrentLevel}/${WHACKS_PER_LEVEL} talpe al Livello ${currentLevel + 1}`;
+  }
+}
+
+function showLevelUpToast(level, bonusSecs) {
+  const toast = document.getElementById('levelUpToast');
+  const sub = document.getElementById('levelUpSub');
+  if (!toast) return;
+
+  if (sub) {
+    const speedMultiplier = (1 + (level - 1) * 0.2).toFixed(1);
+    sub.textContent = `Livello ${level} • Velocità ${speedMultiplier}x!`;
+  }
+
+  toast.classList.remove('hidden');
+  toast.style.animation = 'none';
+  toast.offsetHeight; // trigger reflow
+  toast.style.animation = null;
+
+  if (levelUpTimer) clearTimeout(levelUpTimer);
+  levelUpTimer = setTimeout(() => {
+    toast.classList.add('hidden');
+  }, 1800);
+}
+
+function checkLevelUp() {
+  if (whacksInCurrentLevel >= WHACKS_PER_LEVEL) {
+    currentLevel++;
+    if (currentLevel > highestLevel) {
+      highestLevel = currentLevel;
+    }
+    whacksInCurrentLevel = 0;
+
+    // Bonus tempo abbinato al Level Up (+4 secondi)
+    const timeBonus = 4;
+    timeLeft = Math.min(99, timeLeft + timeBonus);
+    countdown.textContent = timeLeft < 10 ? `0${timeLeft}` : timeLeft;
+
+    updateLevelUI();
+    showLevelUpToast(currentLevel, timeBonus);
+    playLevelUpChime();
+  } else {
+    updateLevelUI();
+  }
+}
+
+function showFloatingScore(x, y, text, isGolden) {
+  const floater = document.createElement('div');
+  floater.classList.add('floating-score');
+  if (isGolden) floater.classList.add('golden');
+  floater.textContent = text;
+  floater.style.left = `${x}px`;
+  floater.style.top = `${y}px`;
+  document.body.appendChild(floater);
+
+  setTimeout(() => {
+    if (floater.parentNode) {
+      floater.remove();
+    }
+  }, 750);
+}
+
+function clearAllMoles() {
+  activeMoles.forEach((data, hole) => {
+    if (data.timeout) clearTimeout(data.timeout);
+    if (hole.contains(data.img)) {
+      hole.removeChild(data.img);
+    }
+  });
+  activeMoles.clear();
+}
+
+function spawnMole() {
+  if (isPaused || timeLeft <= 0) return;
+
+  const availableHoles = holes.filter(h => !h.querySelector('.mole'));
+  if (availableHoles.length === 0) return;
+
+  const config = getLevelConfig(currentLevel);
+  const hole = availableHoles[Math.floor(Math.random() * availableHoles.length)];
+  const isGolden = Math.random() < config.goldenChance;
+
+  const img = document.createElement('img');
+  img.classList.add('mole');
+  if (isGolden) {
+    img.classList.add('golden-mole');
+  }
+  img.src = './assets/mole.png';
+
+  let whacked = false;
+
+  const handleMoleHit = (e) => {
+    e.preventDefault();
+    if (whacked || isPaused || timeLeft <= 0) return;
+    whacked = true;
+
+    const earnedPoints = isGolden ? config.basePoints * 3 : config.basePoints;
+    score += earnedPoints;
+    scoreEl.textContent = score;
+
+    whacksInCurrentLevel++;
+
+    if (isGolden) {
+      playGoldenHitChime();
+    } else {
+      sound.currentTime = 0;
+      sound.play().catch(() => {});
+    }
+
+    img.src = './assets/mole-whacked.png';
+
+    const x = e.clientX || (e.touches ? e.touches[0].clientX : (e.changedTouches ? e.changedTouches[0].clientX : window.innerWidth / 2));
+    const y = e.clientY || (e.touches ? e.touches[0].clientY : (e.changedTouches ? e.changedTouches[0].clientY : window.innerHeight / 2));
+
+    showTouchEffect(x, y, true);
+    showFloatingScore(x, y, `+${earnedPoints}${isGolden ? ' ⭐' : ''}`, isGolden);
+
+    checkLevelUp();
+
+    const data = activeMoles.get(hole);
+    if (data && data.timeout) {
+      clearTimeout(data.timeout);
+      data.timeout = null;
+    }
+
+    setTimeout(() => {
+      if (hole.contains(img)) {
+        hole.removeChild(img);
+      }
+      activeMoles.delete(hole);
+      if (timeLeft > 0 && !isPaused && activeMoles.size === 0) {
+        runWave();
+      }
+    }, config.hitDelay);
+  };
+
+  img.addEventListener('click', handleMoleHit);
+  img.addEventListener('touchstart', handleMoleHit, { passive: false });
+
+  hole.appendChild(img);
+
+  const moleData = {
+    img,
+    isGolden,
+    whacked: false,
+    timeout: setTimeout(() => {
+      if (!whacked && hole.contains(img)) {
+        hole.removeChild(img);
+      }
+      activeMoles.delete(hole);
+      if (timeLeft > 0 && !isPaused && activeMoles.size === 0) {
+        runWave();
+      }
+    }, config.duration)
+  };
+
+  activeMoles.set(hole, moleData);
+}
+
+function runWave() {
+  if (isPaused || timeLeft <= 0) return;
+  const config = getLevelConfig(currentLevel);
+
+  spawnMole();
+
+  if (Math.random() < config.multiChance && holes.filter(h => !h.querySelector('.mole')).length > 0) {
+    setTimeout(() => {
+      if (!isPaused && timeLeft > 0) {
+        spawnMole();
+      }
+    }, 120);
+  }
+}
+
 // Pause/Resume functionality
 pauseBtn.addEventListener("click", () => {
   isPaused = !isPaused;
   pauseBtn.textContent = isPaused ? "Resume" : "Pause";
 
   if (isPaused) {
-    if (moleTimeout) {
-      clearTimeout(moleTimeout);
-      moleTimeout = null;
-    }
+    activeMoles.forEach((data) => {
+      if (data.timeout) {
+        clearTimeout(data.timeout);
+        data.timeout = null;
+      }
+    });
   } else if (timeLeft > 0) {
-    run();
+    if (activeMoles.size === 0) {
+      runWave();
+    } else {
+      const config = getLevelConfig(currentLevel);
+      activeMoles.forEach((data, hole) => {
+        data.timeout = setTimeout(() => {
+          if (hole.contains(data.img)) {
+            hole.removeChild(data.img);
+          }
+          activeMoles.delete(hole);
+          if (timeLeft > 0 && !isPaused && activeMoles.size === 0) {
+            runWave();
+          }
+        }, config.duration);
+      });
+    }
   }
 });
-
-function run() {
-  if (isPaused || timeLeft <= 0) return;
-
-  const i = Math.floor(Math.random() * holes.length);
-  let hole = holes[i];
-
-  const img = document.createElement("img");
-  img.classList.add("mole");
-  img.src = "./assets/mole.png";
-
-  // Function to handle mole hit
-  const handleMoleHit = (e) => {
-    e.preventDefault();
-    score += 10;
-    sound.play();
-    scoreEl.textContent = score;
-    img.src = "./assets/mole-whacked.png";
-
-    // Show boom effect for all devices
-    const x = e.clientX || (e.touches ? e.touches[0].clientX : e.changedTouches[0].clientX);
-    const y = e.clientY || (e.touches ? e.touches[0].clientY : e.changedTouches[0].clientY);
-    showTouchEffect(x, y, true);
-
-    clearTimeout(moleTimeout);
-    moleTimeout = null;
-    setTimeout(() => {
-      hole.removeChild(img);
-      if (timeLeft > 0 && !isPaused) {
-        run();
-      }
-    }, 500);
-  };
-
-  // Add both click and touch event listeners
-  img.addEventListener("click", handleMoleHit);
-  img.addEventListener("touchstart", handleMoleHit);
-
-  hole.appendChild(img);
-
-  moleTimeout = setTimeout(() => {
-    moleTimeout = null;
-    hole.removeChild(img);
-    if (timeLeft > 0 && !isPaused) {
-      run();
-    }
-  }, 1500);
-}
 
 // Initialize Firebase on load
 document.addEventListener('DOMContentLoaded', initFirebase);
@@ -504,16 +742,26 @@ function startGame() {
   score = 0;
   timeLeft = 30;
   isPaused = false;
-  moleTimeout = null;
+  currentLevel = 1;
+  highestLevel = 1;
+  whacksInCurrentLevel = 0;
+  clearAllMoles();
 
   // Update UI
-  scoreEl.textContent = '00';
+  scoreEl.textContent = '0';
   countdown.textContent = '30';
   pauseBtn.textContent = 'Pause';
+  updateLevelUI();
+
+  // Hide level toast if shown
+  const toast = document.getElementById('levelUpToast');
+  if (toast) toast.classList.add('hidden');
 
   // Hide start screen, show game screen
   startScreen.classList.add('hidden');
   gameScreen.style.display = 'flex';
+  document.querySelector(".board").style.display = "grid";
+  document.querySelector(".box").style.display = "block";
 
   // Clear any existing final score/leaderboard/name input/ad container
   document.querySelector('.finalScore').innerHTML = '';
@@ -531,13 +779,10 @@ function startGame() {
   interval = setInterval(() => {
     if (!isPaused) {
       timeLeft--;
-      countdown.textContent = timeLeft;
+      countdown.textContent = timeLeft < 10 ? "0" + timeLeft : timeLeft;
 
-      if (timeLeft < 10) {
-        countdown.textContent = "0" + timeLeft;
-      }
-
-      if (timeLeft < 0) {
+      if (timeLeft <= 0) {
+        clearAllMoles();
         document.querySelector(".board").style.display = "none";
         document.querySelector(".box").style.display = "none";
         clearInterval(interval);
@@ -548,14 +793,11 @@ function startGame() {
         document.querySelector("body").style.cursor = "default";
         cursor.style.display = "none";
 
-        finalScore.innerHTML = '';
-        const h3 = document.createElement("h3");
-        const h1 = document.createElement("h1");
-        h3.textContent = "Your Final Score is : ";
-        h1.textContent = score;
-
-        finalScore.appendChild(h3);
-        finalScore.appendChild(h1);
+        finalScore.innerHTML = `
+          <h3>Partita Terminata!</h3>
+          <h1>${score} Punti</h1>
+          <div class="final-level-badge">🏆 Livello Raggiunto: Livello ${highestLevel}</div>
+        `;
         finalScore.style.display = "block";
 
         // Mostra l'annuncio e il messaggio di transizione a fine partita
@@ -576,13 +818,13 @@ function startGame() {
         });
 
         // restart the game
-        restartBtn.addEventListener("click", () => {
+        restartBtn.onclick = () => {
           window.location.reload();
-        });
+        };
       }
     }
   }, 1000);
 
   // Start the game loop
-  run();
+  runWave();
 }

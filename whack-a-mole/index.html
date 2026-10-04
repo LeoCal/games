@@ -22,6 +22,7 @@
     <!-- Start Screen -->
     <div class="start-screen" id="startScreen">
       <h1 class="game-title">Whack a Mole</h1>
+      <div class="mode-badge">⚡ Modalità Arcade a Livelli Progressivi</div>
       <button class="start-btn" id="startBtn">Start</button>
       <button class="leaderboard-btn" id="leaderboardBtn">Leaderboard</button>
     </div>
@@ -35,11 +36,40 @@
 
     <!-- Game Screen (hidden initially) -->
     <div class="game-screen" id="gameScreen" style="display: none;">
+      <!-- Level Up Banner Notification (hidden by default) -->
+      <div class="level-up-toast hidden" id="levelUpToast">
+        <div class="level-up-banner">
+          <span class="level-up-icon">⚡</span>
+          <span class="level-up-title">LEVEL UP!</span>
+        </div>
+        <div class="level-up-details">
+          <span class="level-up-sub" id="levelUpSub">Livello 2 • Velocità Aumentata!</span>
+          <span class="level-up-bonus">+4s Bonus Tempo! ⏱️</span>
+        </div>
+      </div>
+
       <div class="box">
-        <h3 class="score">Score : <span>00</span></h3>
-        <h3 class="countdown">
-          Time Left : <span> 30 </span> <span> sec </span>
-        </h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Punti</span>
+            <span class="stat-value score"><span>0</span></span>
+          </div>
+          <div class="stat-card stat-level">
+            <span class="stat-label">Livello</span>
+            <span class="stat-value level-display">1</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Tempo</span>
+            <span class="stat-value countdown"><span>30</span>s</span>
+          </div>
+        </div>
+        <!-- Progress toward next level -->
+        <div class="level-progress-wrapper" title="Progresso per il prossimo livello">
+          <div class="level-progress-track">
+            <div class="level-progress-fill" id="levelProgressFill" style="width: 0%;"></div>
+          </div>
+          <span class="level-progress-text" id="levelProgressText">0/5 talpe al Livello 2</span>
+        </div>
         <button class="pauseBtn">Pause</button>
       </div>
       <div class="board">
