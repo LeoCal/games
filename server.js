@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 // Serve static files from whack-a-mole directory
 app.use(express.static(path.join(__dirname, 'whack-a-mole')));
 app.use('/whack-a-mole', express.static(path.join(__dirname, 'whack-a-mole')));
+app.use('/games/whack-a-mole', express.static(path.join(__dirname, 'whack-a-mole')));
 app.use(express.static(__dirname));
 
 // Fallback to index.html for any unmatched route
