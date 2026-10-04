@@ -1,0 +1,7 @@
+{
+  "name": "Whack a Mole",
+  "description": "Classic Whack a Mole arcade game with scoring, timer, and global leaderboard.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

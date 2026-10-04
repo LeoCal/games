@@ -24,33 +24,122 @@ const FIREBASE_CONFIG = {
 let db = null;
 let firebaseReady = false;
 
+function getPendingScores() {
+  try {
+    const raw = localStorage.getItem('whackAMolePendingSync');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function savePendingScores(scores) {
+  try {
+    localStorage.setItem('whackAMolePendingSync', JSON.stringify(scores));
+  } catch (e) {
+    console.error('Failed to save pending scores to localStorage', e);
+  }
+}
+
+let isSyncing = false;
+async function syncPendingScores() {
+  if (!firebaseReady || !db || isSyncing) return;
+  const pending = getPendingScores();
+  if (pending.length === 0) return;
+
+  isSyncing = true;
+  console.log(`Syncing ${pending.length} pending offline score(s) to Firebase...`);
+  const remaining = [];
+  for (const item of pending) {
+    try {
+      const { tempId, ...entryToSave } = item;
+      await db.ref('leaderboard').push(entryToSave);
+      console.log('Successfully synced score to Firebase:', entryToSave);
+    } catch (e) {
+      console.warn('Sync failed for item, keeping in queue:', item, e);
+      remaining.push(item);
+    }
+  }
+  savePendingScores(remaining);
+  isSyncing = false;
+
+  if (remaining.length < pending.length) {
+    try {
+      const snapshot = await db.ref('leaderboard').orderByChild('score').once('value');
+      const data = snapshot.val() || {};
+      const entries = Object.entries(data).sort((a, b) => b[1].score - a[1].score);
+      if (entries.length > 100) {
+        for (const [key] of entries.slice(100)) {
+          await db.ref('leaderboard').child(key).remove();
+        }
+      }
+    } catch (e) {
+      console.warn('Trim leaderboard error:', e);
+    }
+  }
+}
+
 function initFirebase() {
   if (typeof firebase !== 'undefined') {
-    firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.database();
-    firebaseReady = true;
-    console.log('Firebase initialized');
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.database();
+      firebaseReady = true;
+      console.log('Firebase initialized');
+
+      // Listen for connection state changes to automatically sync pending offline scores
+      const connectedRef = db.ref('.info/connected');
+      connectedRef.on('value', (snap) => {
+        if (snap.val() === true) {
+          console.log('Firebase connected: syncing pending offline scores...');
+          syncPendingScores();
+        }
+      });
+    } catch (e) {
+      console.warn('Firebase init error, using localStorage fallback:', e);
+      firebaseReady = false;
+    }
   } else {
     console.warn('Firebase SDK not loaded, using localStorage fallback');
     firebaseReady = false;
   }
 }
 
+window.addEventListener('online', () => {
+  if (firebaseReady && db) {
+    syncPendingScores();
+  }
+});
+
 // Leaderboard functions
 async function getLeaderboard() {
   if (firebaseReady && db) {
     try {
-      const snapshot = await db.ref('leaderboard').orderByChild('score').limitToLast(10).once('value');
+      // Sync any queued offline scores first
+      await syncPendingScores();
+
+      const fetchPromise = db.ref('leaderboard').orderByChild('score').limitToLast(10).once('value');
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase timeout')), 2500));
+      const snapshot = await Promise.race([fetchPromise, timeoutPromise]);
       const data = snapshot.val() || {};
       const leaderboard = Object.values(data).sort((a, b) => b.score - a.score);
+      localStorage.setItem('whackAMoleLeaderboard', JSON.stringify(leaderboard));
       return leaderboard;
     } catch (e) {
-      console.error('Firebase read error:', e);
+      console.warn('Firebase read error or timeout, falling back to localStorage:', e);
     }
   }
-  // Fallback to localStorage
-  const leaderboard = localStorage.getItem('whackAMoleLeaderboard');
-  return leaderboard ? JSON.parse(leaderboard) : [];
+  // Fallback to localStorage combined with pending un-synced scores
+  const localLeaderboard = getLocalLeaderboard();
+  const pending = getPendingScores();
+  const combined = [...localLeaderboard];
+  for (const p of pending) {
+    if (!combined.some(e => e.name === p.name && e.score === p.score && e.date === p.date)) {
+      combined.push({ name: p.name, score: p.score, date: p.date });
+    }
+  }
+  combined.sort((a, b) => b.score - a.score);
+  return combined.slice(0, 10);
 }
 
 async function saveToLeaderboard(name, score) {
@@ -58,11 +147,19 @@ async function saveToLeaderboard(name, score) {
   const europeanDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   const entry = { name, score, date: europeanDate };
 
+  let savedToFirebase = false;
+
   if (firebaseReady && db) {
     try {
-      // Push new entry
-      await db.ref('leaderboard').push(entry);
-      // Keep only top 100 to prevent unbounded growth
+      // Push new entry with timeout
+      const pushPromise = db.ref('leaderboard').push(entry);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase timeout')), 2500));
+      await Promise.race([pushPromise, timeoutPromise]);
+      savedToFirebase = true;
+
+      // Sync any pending items
+      syncPendingScores();
+
       const snapshot = await db.ref('leaderboard').orderByChild('score').once('value');
       const data = snapshot.val() || {};
       const entries = Object.entries(data).sort((a, b) => b[1].score - a[1].score);
@@ -73,10 +170,18 @@ async function saveToLeaderboard(name, score) {
         }
       }
     } catch (e) {
-      console.error('Firebase write error:', e);
+      console.warn('Firebase write failed, queueing for sync when reachable:', e);
     }
   }
-  // Also save to localStorage as backup
+
+  // If not saved to Firebase directly, queue for automatic sync when reachable
+  if (!savedToFirebase) {
+    const pending = getPendingScores();
+    pending.push({ ...entry, tempId: Date.now() + '-' + Math.random().toString(36).substring(2, 7) });
+    savePendingScores(pending);
+  }
+
+  // Also maintain local leaderboard cache
   const localLeaderboard = getLocalLeaderboard();
   localLeaderboard.push(entry);
   localLeaderboard.sort((a, b) => b.score - a.score);
@@ -106,6 +211,17 @@ async function showLeaderboard(leaderboard) {
   const title = document.createElement('h2');
   title.textContent = '🌍 Global Leaderboard (Top 10)';
   leaderboardDiv.appendChild(title);
+
+  const pendingScores = getPendingScores();
+  if (pendingScores.length > 0) {
+    const notice = document.createElement('p');
+    notice.style.fontSize = '0.85rem';
+    notice.style.color = '#ffd700';
+    notice.style.margin = '4px 0 10px 0';
+    notice.style.fontWeight = 'bold';
+    notice.textContent = `⏳ ${pendingScores.length} score(s) queued offline — will sync to Firebase once connected.`;
+    leaderboardDiv.appendChild(notice);
+  }
 
   const table = document.createElement('table');
   table.innerHTML = `
