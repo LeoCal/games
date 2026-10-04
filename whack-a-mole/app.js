@@ -114,7 +114,7 @@ const TRANSLATIONS = {
     top10Title: "🎉 Top 10 Globale! Inserisci il tuo nome:",
     namePlaceholder: "Il tuo nome",
     submitBtn: "Invia",
-    globalLeaderboardTitle: "🌍 Classifica Globale (Top 10)",
+    globalLeaderboardTitle: '🌍 Classifica Globale<span class="leaderboard-top10-sub">(Top 10)</span>',
     rankCol: "Pos",
     nameCol: "Nome",
     scoreCol: "Punti",
@@ -147,7 +147,7 @@ const TRANSLATIONS = {
     top10Title: "🎉 Global Top 10! Enter your name:",
     namePlaceholder: "Your name",
     submitBtn: "Submit",
-    globalLeaderboardTitle: "🌍 Global Leaderboard (Top 10)",
+    globalLeaderboardTitle: '🌍 Global Leaderboard<span class="leaderboard-top10-sub">(Top 10)</span>',
     rankCol: "Rank",
     nameCol: "Name",
     scoreCol: "Score",
@@ -180,7 +180,7 @@ const TRANSLATIONS = {
     top10Title: "🎉 Top 10 Mondial! Entrez votre nom:",
     namePlaceholder: "Votre nom",
     submitBtn: "Envoyer",
-    globalLeaderboardTitle: "🌍 Classement Mondial (Top 10)",
+    globalLeaderboardTitle: '🌍 Classement Mondial<span class="leaderboard-top10-sub">(Top 10)</span>',
     rankCol: "Rang",
     nameCol: "Nom",
     scoreCol: "Score",
@@ -213,7 +213,7 @@ const TRANSLATIONS = {
     top10Title: "🎉 Globale Top 10! Gib deinen Namen ein:",
     namePlaceholder: "Dein Name",
     submitBtn: "Senden",
-    globalLeaderboardTitle: "🌍 Globale Bestenliste (Top 10)",
+    globalLeaderboardTitle: '🌍 Globale Bestenliste<span class="leaderboard-top10-sub">(Top 10)</span>',
     rankCol: "Rang",
     nameCol: "Name",
     scoreCol: "Punkte",
@@ -536,7 +536,7 @@ async function showLeaderboard(leaderboard) {
   leaderboardDiv.classList.add('leaderboard');
 
   const title = document.createElement('h2');
-  title.textContent = tr.globalLeaderboardTitle;
+  title.innerHTML = tr.globalLeaderboardTitle;
   leaderboardDiv.appendChild(title);
 
   const pendingScores = getPendingScores();
