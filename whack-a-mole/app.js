@@ -240,6 +240,10 @@ function setLanguage(lang) {
   applyTranslations();
 }
 
+let cachedLeaderboard = null;
+let currentAdRemainingSeconds = 5;
+let currentAdScoreValue = 0;
+
 function applyTranslations() {
   const tr = t();
   document.documentElement.lang = currentLang.toLowerCase();
@@ -273,8 +277,52 @@ function applyTranslations() {
   // Progress text
   updateLevelUI();
 
-  // If leaderboard screen is currently visible, refresh it
-  if (typeof leaderboardScreen !== 'undefined' && leaderboardScreen && !leaderboardScreen.classList.contains('hidden')) {
+  // Update Top 10 Name Input screen if currently visible
+  const nameInputEl = document.querySelector('.name-input');
+  if (nameInputEl) {
+    const h2 = nameInputEl.querySelector('h2');
+    if (h2) h2.textContent = tr.top10Title;
+    const input = nameInputEl.querySelector('input');
+    if (input) input.placeholder = tr.namePlaceholder;
+    const submitBtn = nameInputEl.querySelector('.submitBtn');
+    if (submitBtn) submitBtn.textContent = tr.submitBtn;
+  }
+
+  // Update Final Score screen if currently visible
+  const finalScoreEl = document.querySelector('.finalScore');
+  if (finalScoreEl && finalScoreEl.style.display !== 'none' && finalScoreEl.children.length > 0) {
+    const h3 = finalScoreEl.querySelector('h3');
+    if (h3) h3.textContent = tr.gameOverTitle;
+    const h1 = finalScoreEl.querySelector('h1');
+    if (h1) h1.textContent = `${score} ${tr.scoreLabel}`;
+    const badge = finalScoreEl.querySelector('.final-level-badge');
+    if (badge) badge.textContent = tr.highestLevelReached(highestLevel);
+  }
+
+  // Update Ad Interstitial if currently visible
+  const adEl = document.querySelector('.ad-interstitial-container');
+  if (adEl) {
+    const badge = adEl.querySelector('.ad-notice-badge');
+    if (badge) badge.textContent = tr.adBadge;
+    const title = adEl.querySelector('.ad-notice-title');
+    if (title) title.textContent = tr.adEndGameTitle;
+    const desc = adEl.querySelector('.ad-notice-desc');
+    if (desc) desc.innerHTML = tr.adDesc(currentAdScoreValue || score);
+    const continueBtn = adEl.querySelector('#adContinueBtn');
+    if (continueBtn) {
+      if (continueBtn.disabled) {
+        continueBtn.textContent = tr.adWaitText(currentAdRemainingSeconds || 5);
+      } else {
+        continueBtn.textContent = tr.adContinueText;
+      }
+    }
+  }
+
+  // Update Leaderboard if currently visible (either on leaderboardScreen or on game screen)
+  const existingLeaderboard = document.querySelector('.leaderboard');
+  if (existingLeaderboard && cachedLeaderboard) {
+    showLeaderboard(cachedLeaderboard);
+  } else if (typeof leaderboardScreen !== 'undefined' && leaderboardScreen && !leaderboardScreen.classList.contains('hidden')) {
     getLeaderboard().then(showLeaderboard);
   }
 }
@@ -478,6 +526,7 @@ async function isTopTen(score) {
 }
 
 async function showLeaderboard(leaderboard) {
+  cachedLeaderboard = leaderboard;
   // Remove existing leaderboard if any
   const existingLeaderboard = document.querySelector('.leaderboard');
   if (existingLeaderboard) existingLeaderboard.remove();
@@ -500,6 +549,9 @@ async function showLeaderboard(leaderboard) {
     notice.textContent = tr.offlineNotice(pendingScores.length);
     leaderboardDiv.appendChild(notice);
   }
+
+  const tableWrapper = document.createElement('div');
+  tableWrapper.classList.add('leaderboard-table-wrapper');
 
   const table = document.createElement('table');
   table.innerHTML = `
@@ -525,7 +577,8 @@ async function showLeaderboard(leaderboard) {
     </tbody>
   `;
 
-  leaderboardDiv.appendChild(table);
+  tableWrapper.appendChild(table);
+  leaderboardDiv.appendChild(tableWrapper);
 
   // Append to leaderboardContainer if on leaderboard screen, otherwise to body
   if (leaderboardScreen && leaderboardScreen.style.display !== 'none' && !leaderboardScreen.classList.contains('hidden')) {
@@ -540,6 +593,9 @@ async function showLeaderboard(leaderboard) {
  * all'inserimento del nome o alla visualizzazione della classifica.
  */
 function showEndGameAd(finalScoreValue, onAdComplete) {
+  currentAdScoreValue = finalScoreValue;
+  currentAdRemainingSeconds = ADSENSE_CONFIG.interstitialWaitSeconds;
+
   // Rimuovi eventuali annunci precedenti
   const existingAd = document.querySelector('.ad-interstitial-container');
   if (existingAd) existingAd.remove();
@@ -604,13 +660,14 @@ function showEndGameAd(finalScoreValue, onAdComplete) {
 
   countdownTimer = setInterval(() => {
     remainingSeconds--;
+    currentAdRemainingSeconds = remainingSeconds;
     if (remainingSeconds > 0) {
-      continueBtn.textContent = tr.adWaitText(remainingSeconds);
+      continueBtn.textContent = t().adWaitText(remainingSeconds);
     } else {
       clearInterval(countdownTimer);
       countdownTimer = null;
       continueBtn.disabled = false;
-      continueBtn.textContent = tr.adContinueText;
+      continueBtn.textContent = t().adContinueText;
     }
   }, 1000);
 }
