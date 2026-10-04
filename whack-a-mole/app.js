@@ -9,11 +9,11 @@ let timeLeft = 30;
 let isPaused = false;
 let moleTimeout = null;
 
-// Google AdSense config - Inserisci qui il tuo ID Editore e ID Slot
+// Google AdSense config
 const ADSENSE_CONFIG = {
-  client: "ca-pub-XXXXXXXXXXXXXXXX", // Sostituisci con il tuo Publisher ID Google AdSense
-  slot: "1234567890",               // Sostituisci con il tuo Ad Slot ID
-  interstitialWaitSeconds: 5         // Secondi di attesa prima di poter procedere
+  client: "ca-pub-5034717836472110", // ID Editore AdSense configurato
+  slot: "1234567890",                // Sostituisci con il tuo Ad Slot ID specifico appena creato nel pannello AdSense
+  interstitialWaitSeconds: 5          // Secondi di attesa prima di poter procedere
 };
 
 // Firebase config - REPLACE WITH YOUR OWN CONFIG FROM FIREBASE CONSOLE
