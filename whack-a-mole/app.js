@@ -12,7 +12,7 @@ let isPaused = false;
 let currentLevel = 1;
 let highestLevel = 1;
 let whacksInCurrentLevel = 0;
-const WHACKS_PER_LEVEL = 5;
+const WHACKS_PER_LEVEL = 10;
 const activeMoles = new Map(); // hole -> { timeout, isGolden, img }
 let levelUpTimer = null;
 
