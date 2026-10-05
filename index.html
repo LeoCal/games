@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LeoCal Games - Giochi Arcade Online</title>
-    <meta name="description" content="Raccolta di giochi arcade online gratuiti, inclusa la versione ufficiale di Whack a Mole con classifica globale." />
+    <title id="docTitle">LeoCal Games - Giochi Arcade Online</title>
+    <meta name="description" id="metaDescription" content="Raccolta di giochi arcade online gratuiti, inclusa la versione ufficiale di Schiaccia la Talpa con classifica globale." />
+    <meta property="og:title" id="ogTitle" content="LeoCal Games - Giochi Arcade Online" />
+    <meta property="og:description" id="ogDescription" content="Raccolta di giochi arcade online gratuiti, inclusa la versione ufficiale di Schiaccia la Talpa con classifica globale." />
     <!-- Google AdSense Account Verification Meta Tag -->
     <meta name="google-adsense-account" content="ca-pub-5034717836472110" />
     <!-- Google AdSense SDK -->
@@ -33,16 +35,45 @@
         border-radius: 16px;
         max-width: 520px;
         width: 100%;
-        padding: 35px 25px;
+        padding: 30px 25px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         border: 3px solid #52a752;
+      }
+      /* Language Selector Bar */
+      .lang-selector-container {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 22px;
+      }
+      .lang-btn {
+        background: rgba(240, 248, 240, 0.95);
+        color: #2e692e;
+        border: 1.5px solid #52a752;
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .lang-btn:hover {
+        background: #dff2df;
+        transform: translateY(-1px);
+      }
+      .lang-btn.active {
+        background: #2e692e;
+        color: #ffffff;
+        border-color: #1e461e;
+        box-shadow: 0 3px 8px rgba(30, 70, 30, 0.35);
       }
       h1 {
         font-size: 2.2rem;
         color: #2e692e;
         margin-bottom: 12px;
       }
-      p {
+      p.welcome-text {
         font-size: 1.05rem;
         color: #555;
         line-height: 1.5;
@@ -61,7 +92,7 @@
         box-shadow: 0 4px 15px rgba(82, 167, 82, 0.4);
         transition: all 0.25s ease;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
       }
       .play-btn:hover {
         background-color: #3d7f3d;
@@ -88,28 +119,167 @@
       footer {
         margin-top: 25px;
         font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.85);
       }
     </style>
   </head>
   <body>
     <div class="card">
-      <h1>🎮 LeoCal Games</h1>
-      <p>Benvenuto sulla piattaforma di giochi arcade online. Sfida i tuoi riflessi e scala la classifica mondiale!</p>
+      <!-- Language Quick Selector -->
+      <div class="lang-selector-container" id="langSelector">
+        <button class="lang-btn" data-lang="EN" title="English">🇬🇧 EN</button>
+        <button class="lang-btn active" data-lang="IT" title="Italiano">🇮🇹 IT</button>
+        <button class="lang-btn" data-lang="FR" title="Français">🇫🇷 FR</button>
+        <button class="lang-btn" data-lang="DE" title="Deutsch">🇩🇪 DE</button>
+      </div>
+
+      <h1 id="mainTitle">🎮 LeoCal Games</h1>
+      <p class="welcome-text" id="welcomeText">Benvenuto sulla piattaforma di giochi arcade online. Sfida i tuoi riflessi e scala la classifica mondiale!</p>
       
-      <a href="/games/whack-a-mole/" class="play-btn">Gioca a Whack a Mole 🔨</a>
+      <a href="/games/whack-a-mole/" class="play-btn" id="playBtn">Gioca a Schiaccia la Talpa 🔨</a>
 
       <div class="feature-box">
-        <strong>Caratteristiche del gioco:</strong>
-        <ul>
+        <strong id="featureTitle">Caratteristiche del gioco:</strong>
+        <ul id="featureList">
           <li>Classifica globale in tempo reale su Firebase</li>
           <li>Modalità offline con sincronizzazione automatica</li>
           <li>Ottimizzato per PC, tablet e smartphone</li>
         </ul>
       </div>
     </div>
-    <footer>
+
+    <footer id="footerText">
       &copy; 2026 LeoCal Games &bull; Tutti i diritti riservati
     </footer>
+
+    <script>
+      const TRANSLATIONS = {
+        IT: {
+          langCode: "it",
+          pageTitle: "LeoCal Games - Giochi Arcade Online",
+          pageDescription: "Raccolta di giochi arcade online gratuiti, inclusa la versione ufficiale di Schiaccia la Talpa con classifica globale.",
+          mainTitle: "🎮 LeoCal Games",
+          welcomeText: "Benvenuto sulla piattaforma di giochi arcade online. Sfida i tuoi riflessi e scala la classifica mondiale!",
+          playBtn: "Gioca a Schiaccia la Talpa 🔨",
+          featureTitle: "Caratteristiche del gioco:",
+          features: [
+            "Classifica globale in tempo reale su Firebase",
+            "Modalità offline con sincronizzazione automatica",
+            "Ottimizzato per PC, tablet e smartphone"
+          ],
+          footer: "&copy; 2026 LeoCal Games &bull; Tutti i diritti riservati"
+        },
+        EN: {
+          langCode: "en",
+          pageTitle: "LeoCal Games - Free Online Arcade Games",
+          pageDescription: "Free online arcade games collection, including the official Whack a Mole with real-time global leaderboard.",
+          mainTitle: "🎮 LeoCal Games",
+          welcomeText: "Welcome to the online arcade gaming platform. Challenge your reflexes and climb the global leaderboard!",
+          playBtn: "Play Whack a Mole 🔨",
+          featureTitle: "Game features:",
+          features: [
+            "Real-time global leaderboard powered by Firebase",
+            "Offline mode with automatic synchronization",
+            "Optimized for desktop, tablet, and smartphone"
+          ],
+          footer: "&copy; 2026 LeoCal Games &bull; All rights reserved"
+        },
+        FR: {
+          langCode: "fr",
+          pageTitle: "LeoCal Games - Jeux d'Arcade en Ligne",
+          pageDescription: "Collection de jeux d'arcade gratuits en ligne, dont la version officielle de Tape-Taupe avec classement mondial.",
+          mainTitle: "🎮 LeoCal Games",
+          welcomeText: "Bienvenue sur la plateforme de jeux d'arcade en ligne. Défiez vos réflexes et grimpez au sommet du classement mondial !",
+          playBtn: "Jouer à Tape-Taupe 🔨",
+          featureTitle: "Caractéristiques du jeu :",
+          features: [
+            "Classement mondial en temps réel via Firebase",
+            "Mode hors ligne avec synchronisation automatique",
+            "Optimisé pour PC, tablettes et smartphones"
+          ],
+          footer: "&copy; 2026 LeoCal Games &bull; Tous droits réservés"
+        },
+        DE: {
+          langCode: "de",
+          pageTitle: "LeoCal Games - Kostenlose Online-Arcade-Spiele",
+          pageDescription: "Sammlung kostenloser Online-Arcade-Spiele, einschließlich der offiziellen Version von Hau den Maulwurf mit weltweiter Bestenliste.",
+          mainTitle: "🎮 LeoCal Games",
+          welcomeText: "Willkommen auf der Plattform für Online-Arcade-Spiele. Teste deine Reflexe und erklimme die weltweite Bestenliste!",
+          playBtn: "Hau den Maulwurf spielen 🔨",
+          featureTitle: "Spielfunktionen:",
+          features: [
+            "Echtzeit-Bestenliste weltweit über Firebase",
+            "Offline-Modus mit automatischer Synchronisierung",
+            "Optimiert für PC, Tablet und Smartphone"
+          ],
+          footer: "&copy; 2026 LeoCal Games &bull; Alle Rechte vorbehalten"
+        }
+      };
+
+      let currentLang = localStorage.getItem('whackAMoleLang') || localStorage.getItem('leoCalGamesLang') || 'IT';
+
+      function applyTranslations() {
+        const tr = TRANSLATIONS[currentLang] || TRANSLATIONS['IT'];
+
+        document.documentElement.lang = tr.langCode;
+        document.title = tr.pageTitle;
+
+        const metaDesc = document.getElementById('metaDescription');
+        if (metaDesc) metaDesc.content = tr.pageDescription;
+
+        const ogTitle = document.getElementById('ogTitle');
+        if (ogTitle) ogTitle.content = tr.pageTitle;
+
+        const ogDesc = document.getElementById('ogDescription');
+        if (ogDesc) ogDesc.content = tr.pageDescription;
+
+        const mainTitle = document.getElementById('mainTitle');
+        if (mainTitle) mainTitle.textContent = tr.mainTitle;
+
+        const welcomeText = document.getElementById('welcomeText');
+        if (welcomeText) welcomeText.textContent = tr.welcomeText;
+
+        const playBtn = document.getElementById('playBtn');
+        if (playBtn) playBtn.textContent = tr.playBtn;
+
+        const featureTitle = document.getElementById('featureTitle');
+        if (featureTitle) featureTitle.textContent = tr.featureTitle;
+
+        const featureList = document.getElementById('featureList');
+        if (featureList) {
+          featureList.innerHTML = tr.features.map(f => `<li>${f}</li>`).join('');
+        }
+
+        const footerText = document.getElementById('footerText');
+        if (footerText) footerText.innerHTML = tr.footer;
+
+        // Update active class on buttons
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.lang === currentLang);
+        });
+      }
+
+      function setLanguage(lang) {
+        if (!TRANSLATIONS[lang]) return;
+        currentLang = lang;
+        localStorage.setItem('whackAMoleLang', lang);
+        localStorage.setItem('leoCalGamesLang', lang);
+        applyTranslations();
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        applyTranslations();
+
+        const langSelector = document.getElementById('langSelector');
+        if (langSelector) {
+          langSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.lang-btn');
+            if (btn && btn.dataset.lang) {
+              setLanguage(btn.dataset.lang);
+            }
+          });
+        }
+      });
+    </script>
   </body>
 </html>
