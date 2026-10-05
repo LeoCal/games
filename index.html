@@ -99,22 +99,23 @@
         transform: translateY(-2px) scale(1.03);
         box-shadow: 0 6px 20px rgba(61, 127, 61, 0.5);
       }
-      .feature-box {
+      .story-box {
         margin-top: 25px;
-        padding: 15px;
+        padding: 18px 20px;
         background: #f4fbf4;
-        border-radius: 8px;
+        border-radius: 12px;
         border: 1px dashed #7fc97f;
         text-align: left;
         font-size: 0.95rem;
         color: #2d5a2d;
+        line-height: 1.55;
       }
-      .feature-box ul {
-        margin-left: 20px;
-        margin-top: 8px;
-      }
-      .feature-box li {
-        margin-bottom: 4px;
+      .story-box p + p {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(127, 201, 127, 0.35);
+        font-style: italic;
+        color: #386b38;
       }
       footer {
         margin-top: 25px;
@@ -138,13 +139,9 @@
       
       <a href="/games/whack-a-mole/" class="play-btn" id="playBtn">Gioca a Schiaccia la Talpa 🔨</a>
 
-      <div class="feature-box">
-        <strong id="featureTitle">Caratteristiche del gioco:</strong>
-        <ul id="featureList">
-          <li>Classifica globale in tempo reale su Firebase</li>
-          <li>Modalità offline con sincronizzazione automatica</li>
-          <li>Ottimizzato per PC, tablet e smartphone</li>
-        </ul>
+      <div class="story-box">
+        <p id="storyGameplay">Sfida il cronometro in questa classica prova di riflessi. Schiaccia le talpe giuste, schiva le rosse e cattura quelle dorate per vincere!</p>
+        <p id="storyOrigin">❤️ Il gioco nasce da un progetto speciale portato avanti nei weekend in famiglia, con le talpe disegnate a mano dalle mie figlie, Sofia e Charlotte.</p>
       </div>
     </div>
 
@@ -157,61 +154,45 @@
         IT: {
           langCode: "it",
           pageTitle: "LeoCal Games - Giochi Arcade Online",
-          pageDescription: "Raccolta di giochi arcade online gratuiti, inclusa la versione ufficiale di Schiaccia la Talpa con classifica globale.",
+          pageDescription: "Sfida i riflessi con Schiaccia la Talpa su LeoCal Games. Un progetto di famiglia con talpe disegnate a mano e classifica mondiale.",
           mainTitle: "🎮 LeoCal Games",
           welcomeText: "Benvenuto sulla piattaforma di giochi arcade online. Sfida i tuoi riflessi e scala la classifica mondiale!",
           playBtn: "Gioca a Schiaccia la Talpa 🔨",
-          featureTitle: "Caratteristiche del gioco:",
-          features: [
-            "Classifica globale in tempo reale su Firebase",
-            "Modalità offline con sincronizzazione automatica",
-            "Ottimizzato per PC, tablet e smartphone"
-          ],
+          storyGameplay: "Sfida il cronometro in questa classica prova di riflessi. Schiaccia le talpe giuste, schiva le rosse e cattura quelle dorate per vincere!",
+          storyOrigin: "❤️ Il gioco nasce da un progetto speciale portato avanti nei weekend in famiglia, con le talpe disegnate a mano dalle mie figlie, Sofia e Charlotte.",
           footer: "&copy; 2026 LeoCal Games &bull; Tutti i diritti riservati"
         },
         EN: {
           langCode: "en",
           pageTitle: "LeoCal Games - Free Online Arcade Games",
-          pageDescription: "Free online arcade games collection, including the official Whack a Mole with real-time global leaderboard.",
+          pageDescription: "Challenge your reflexes with Whack a Mole on LeoCal Games. A family project featuring hand-drawn moles and global leaderboard.",
           mainTitle: "🎮 LeoCal Games",
           welcomeText: "Welcome to the online arcade gaming platform. Challenge your reflexes and climb the global leaderboard!",
           playBtn: "Play Whack a Mole 🔨",
-          featureTitle: "Game features:",
-          features: [
-            "Real-time global leaderboard powered by Firebase",
-            "Offline mode with automatic synchronization",
-            "Optimized for desktop, tablet, and smartphone"
-          ],
+          storyGameplay: "Race against the clock in this classic test of reflexes. Whack the right moles, dodge the red ones, and catch the golden moles to win!",
+          storyOrigin: "❤️ This game was born as a special family weekend project, featuring moles hand-drawn by my daughters, Sofia and Charlotte.",
           footer: "&copy; 2026 LeoCal Games &bull; All rights reserved"
         },
         FR: {
           langCode: "fr",
           pageTitle: "LeoCal Games - Jeux d'Arcade en Ligne",
-          pageDescription: "Collection de jeux d'arcade gratuits en ligne, dont la version officielle de Tape-Taupe avec classement mondial.",
+          pageDescription: "Testez vos réflexes avec Tape-Taupe sur LeoCal Games. Un projet familial avec des taupes dessinées à la main et classement mondial.",
           mainTitle: "🎮 LeoCal Games",
           welcomeText: "Bienvenue sur la plateforme de jeux d'arcade en ligne. Défiez vos réflexes et grimpez au sommet du classement mondial !",
           playBtn: "Jouer à Tape-Taupe 🔨",
-          featureTitle: "Caractéristiques du jeu :",
-          features: [
-            "Classement mondial en temps réel via Firebase",
-            "Mode hors ligne avec synchronisation automatique",
-            "Optimisé pour PC, tablettes et smartphones"
-          ],
+          storyGameplay: "Défiez le chronomètre dans ce test classique de réflexes. Tapez sur les bonnes taupes, esquivez les rouges et attrapez les dorées pour l'emporter !",
+          storyOrigin: "❤️ Ce jeu est né d'un projet spécial réalisé en famille pendant les week-ends, avec des taupes dessinées à la main par mes filles, Sofia et Charlotte.",
           footer: "&copy; 2026 LeoCal Games &bull; Tous droits réservés"
         },
         DE: {
           langCode: "de",
           pageTitle: "LeoCal Games - Kostenlose Online-Arcade-Spiele",
-          pageDescription: "Sammlung kostenloser Online-Arcade-Spiele, einschließlich der offiziellen Version von Hau den Maulwurf mit weltweiter Bestenliste.",
+          pageDescription: "Teste deine Reflexe bei Hau den Maulwurf auf LeoCal Games. Ein Familienprojekt mit handgezeichneten Maulwürfen und weltweiter Bestenliste.",
           mainTitle: "🎮 LeoCal Games",
           welcomeText: "Willkommen auf der Plattform für Online-Arcade-Spiele. Teste deine Reflexe und erklimme die weltweite Bestenliste!",
           playBtn: "Hau den Maulwurf spielen 🔨",
-          featureTitle: "Spielfunktionen:",
-          features: [
-            "Echtzeit-Bestenliste weltweit über Firebase",
-            "Offline-Modus mit automatischer Synchronisierung",
-            "Optimiert für PC, Tablet und Smartphone"
-          ],
+          storyGameplay: "Tritt im klassischen Reaktionstest gegen die Uhr an. Triff die richtigen Maulwürfe, weiche den roten aus und schnapp dir die goldenen, um zu gewinnen!",
+          storyOrigin: "❤️ Das Spiel entstand als besonderes Familienprojekt an den Wochenenden, mit Maulwürfen, die meine Töchter Sofia und Charlotte von Hand gezeichnet haben.",
           footer: "&copy; 2026 LeoCal Games &bull; Alle Rechte vorbehalten"
         }
       };
@@ -242,13 +223,11 @@
         const playBtn = document.getElementById('playBtn');
         if (playBtn) playBtn.textContent = tr.playBtn;
 
-        const featureTitle = document.getElementById('featureTitle');
-        if (featureTitle) featureTitle.textContent = tr.featureTitle;
+        const storyGameplay = document.getElementById('storyGameplay');
+        if (storyGameplay) storyGameplay.textContent = tr.storyGameplay;
 
-        const featureList = document.getElementById('featureList');
-        if (featureList) {
-          featureList.innerHTML = tr.features.map(f => `<li>${f}</li>`).join('');
-        }
+        const storyOrigin = document.getElementById('storyOrigin');
+        if (storyOrigin) storyOrigin.textContent = tr.storyOrigin;
 
         const footerText = document.getElementById('footerText');
         if (footerText) footerText.innerHTML = tr.footer;
